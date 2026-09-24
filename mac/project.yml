@@ -1,0 +1,29 @@
+name: Decks
+options:
+  bundleIdPrefix: dev.yask
+  deploymentTarget:
+    macOS: "26.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+targets:
+  Decks:
+    type: application
+    platform: macOS
+    sources: [Decks]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.yask.decks
+        PRODUCT_NAME: Decks
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Decks
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.music
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Decks · an AI DJ, live · MIT"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        ENABLE_HARDENED_RUNTIME: NO
+        SWIFT_OPTIMIZATION_LEVEL: "-O"
+        MARKETING_VERSION: "0.1"
+        CURRENT_PROJECT_VERSION: "1"

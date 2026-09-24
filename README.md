@@ -61,6 +61,23 @@ Pick two songs, pick a brain, hit **DROP IT**. First-time songs take ~45 s (down
 Jev is reached through OpenRouter's System One passthrough (`POST /api/v1/systemone`, model `typesafe/jev-1.13`); if you
 have a TypeSafe key, put it in `.typesafe_key` to call TypeSafe directly.
 
+## Decks: the native Mac app (`mac/`)
+
+A real-time AI DJ for macOS 26+, built with SwiftUI and Liquid Glass. It performs **live**: the whole booth (two decks, scratch synth,
+slip-mode rolls, brake/spinback, isolator EQs, resonant filters, echo bus, sub-drop impacts) renders in one
+`AVAudioSourceNode` callback on a single sample clock. Jev is asked two bars ahead, and its move runs on the downbeat.
+
+- **Legal music only:** a free crate streamed from [ccMixter](https://ccmixter.org) (Creative Commons Attribution, credited
+  on the deck) and your own DRM-free files. Spotify and Apple Music are deliberately not supported: Spotify's developer terms forbid
+  mixing, and Apple Music's catalog is DRM-protected.
+- **Native analysis:** tempo, beat grid, downbeat, hook and scratch word, plus a 3-band waveform, in ~0.2 s per song
+  using Accelerate. Beat 1 can be nudged per deck.
+- **You can play too:** keys `1`–`7` fire transitions and `Q W E R` fire fills (quantised to the next bar), plus knobs and a crossfader.
+
+```bash
+brew install xcodegen && cd mac && xcodegen && open Decks.xcodeproj    # ⌘R
+```
+
 ## Files
 
 | file | what |

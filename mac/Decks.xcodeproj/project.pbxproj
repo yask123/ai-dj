@@ -1,0 +1,392 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		13CD7A099781009C91204C09 /* DecksApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18584D78DA2F28EAA1615035 /* DecksApp.swift */; };
+		22AC09933F3AB3BF827C0553 /* Booth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B320060BE77842839572E40 /* Booth.swift */; };
+		2817C054FACFE60765963DD0 /* CratePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B876500B774D1F639BA7B3 /* CratePanel.swift */; };
+		331A9A633000F090FD6069FB /* Jev.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8C97B8C18766A054931D1F /* Jev.swift */; };
+		3939931C0690D98854F2B25D /* DJCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9588B7B97A04112DE391F4F /* DJCore.swift */; };
+		5F0A6A7A83E7DD05F0E12E6B /* Turntable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3492DC50185E1148F9ADE22C /* Turntable.swift */; };
+		6204E3CE15D70479DD8C8101 /* BoothView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17232D1E9B4E5AFF363AACAF /* BoothView.swift */; };
+		67AC98D7ADDE9C05C0A63E51 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB3CE7AC9AD045CE8B38AB0 /* AudioEngine.swift */; };
+		765E02AEAE077A31CB28D143 /* Analyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8678CD3F38FECA6C5F653DF /* Analyzer.swift */; };
+		920865950E8B527059C1A330 /* Crate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF91CFF3501D1BB03221DAAB /* Crate.swift */; };
+		A7C27D197AF9FCE6B5A337AD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A12BAA51C65B759934ACB5E4 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0BB3CE7AC9AD045CE8B38AB0 /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
+		0C8C97B8C18766A054931D1F /* Jev.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Jev.swift; sourceTree = "<group>"; };
+		14B876500B774D1F639BA7B3 /* CratePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CratePanel.swift; sourceTree = "<group>"; };
+		17232D1E9B4E5AFF363AACAF /* BoothView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoothView.swift; sourceTree = "<group>"; };
+		18584D78DA2F28EAA1615035 /* DecksApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecksApp.swift; sourceTree = "<group>"; };
+		3492DC50185E1148F9ADE22C /* Turntable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Turntable.swift; sourceTree = "<group>"; };
+		4B320060BE77842839572E40 /* Booth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Booth.swift; sourceTree = "<group>"; };
+		853AA9206DE089FA935612DB /* Decks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Decks.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A12BAA51C65B759934ACB5E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B9588B7B97A04112DE391F4F /* DJCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DJCore.swift; sourceTree = "<group>"; };
+		CF91CFF3501D1BB03221DAAB /* Crate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crate.swift; sourceTree = "<group>"; };
+		F8678CD3F38FECA6C5F653DF /* Analyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analyzer.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1982F8B92BF9311B3E48B498 = {
+			isa = PBXGroup;
+			children = (
+				2E1DC23A9F3DED6094F66B03 /* Decks */,
+				642D1640879A7CB6D28361F6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2E1DC23A9F3DED6094F66B03 /* Decks */ = {
+			isa = PBXGroup;
+			children = (
+				A12BAA51C65B759934ACB5E4 /* Assets.xcassets */,
+				32C4A6FC6D3567120C58C6AF /* App */,
+				A11A8DEAF2AD501B244D5277 /* Audio */,
+				8AC119FD02A30BEFF66027F8 /* Brain */,
+				6DB3D1D97E518BFB8983ED93 /* Crate */,
+				68995A89DD4CC2C9889111A4 /* Views */,
+			);
+			path = Decks;
+			sourceTree = "<group>";
+		};
+		32C4A6FC6D3567120C58C6AF /* App */ = {
+			isa = PBXGroup;
+			children = (
+				18584D78DA2F28EAA1615035 /* DecksApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		642D1640879A7CB6D28361F6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				853AA9206DE089FA935612DB /* Decks.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		68995A89DD4CC2C9889111A4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				17232D1E9B4E5AFF363AACAF /* BoothView.swift */,
+				14B876500B774D1F639BA7B3 /* CratePanel.swift */,
+				3492DC50185E1148F9ADE22C /* Turntable.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		6DB3D1D97E518BFB8983ED93 /* Crate */ = {
+			isa = PBXGroup;
+			children = (
+				CF91CFF3501D1BB03221DAAB /* Crate.swift */,
+			);
+			path = Crate;
+			sourceTree = "<group>";
+		};
+		8AC119FD02A30BEFF66027F8 /* Brain */ = {
+			isa = PBXGroup;
+			children = (
+				4B320060BE77842839572E40 /* Booth.swift */,
+				0C8C97B8C18766A054931D1F /* Jev.swift */,
+			);
+			path = Brain;
+			sourceTree = "<group>";
+		};
+		A11A8DEAF2AD501B244D5277 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				F8678CD3F38FECA6C5F653DF /* Analyzer.swift */,
+				0BB3CE7AC9AD045CE8B38AB0 /* AudioEngine.swift */,
+				B9588B7B97A04112DE391F4F /* DJCore.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FA35CB370535A29A5A12EA33 /* Decks */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B340773D8896B56AF192A956 /* Build configuration list for PBXNativeTarget "Decks" */;
+			buildPhases = (
+				C896EE76855FB9DBCEF5D7C7 /* Sources */,
+				D2C5C6F304C58FD6DB30E36F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Decks;
+			packageProductDependencies = (
+			);
+			productName = Decks;
+			productReference = 853AA9206DE089FA935612DB /* Decks.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D5699E68FB2F6B966FE90B09 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					FA35CB370535A29A5A12EA33 = {
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 436D2F50681E517A3E0607D4 /* Build configuration list for PBXProject "Decks" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 1982F8B92BF9311B3E48B498;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 642D1640879A7CB6D28361F6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FA35CB370535A29A5A12EA33 /* Decks */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D2C5C6F304C58FD6DB30E36F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7C27D197AF9FCE6B5A337AD /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C896EE76855FB9DBCEF5D7C7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				765E02AEAE077A31CB28D143 /* Analyzer.swift in Sources */,
+				67AC98D7ADDE9C05C0A63E51 /* AudioEngine.swift in Sources */,
+				22AC09933F3AB3BF827C0553 /* Booth.swift in Sources */,
+				6204E3CE15D70479DD8C8101 /* BoothView.swift in Sources */,
+				920865950E8B527059C1A330 /* Crate.swift in Sources */,
+				2817C054FACFE60765963DD0 /* CratePanel.swift in Sources */,
+				3939931C0690D98854F2B25D /* DJCore.swift in Sources */,
+				13CD7A099781009C91204C09 /* DecksApp.swift in Sources */,
+				331A9A633000F090FD6069FB /* Jev.swift in Sources */,
+				5F0A6A7A83E7DD05F0E12E6B /* Turntable.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0670724C3F72AAD7CC023788 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Decks;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Decks · an AI DJ, live · MIT";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yask.decks;
+				PRODUCT_NAME = Decks;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		77192A4C2DF3EF8F7FD76410 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		77FDCAB324898FC9C5063468 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		9D9FED45CFE1FE60EF2FD157 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_HARDENED_RUNTIME = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Decks;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Decks · an AI DJ, live · MIT";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.yask.decks;
+				PRODUCT_NAME = Decks;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		436D2F50681E517A3E0607D4 /* Build configuration list for PBXProject "Decks" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				77192A4C2DF3EF8F7FD76410 /* Debug */,
+				77FDCAB324898FC9C5063468 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B340773D8896B56AF192A956 /* Build configuration list for PBXNativeTarget "Decks" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D9FED45CFE1FE60EF2FD157 /* Debug */,
+				0670724C3F72AAD7CC023788 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D5699E68FB2F6B966FE90B09 /* Project object */;
+}
