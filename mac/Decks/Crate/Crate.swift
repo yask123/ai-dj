@@ -5,6 +5,7 @@ import Foundation
 enum TrackSource: Hashable, Sendable {
     case ccmixter(URL)   // Creative Commons stream
     case local(URL)      // the user's own DRM-free file
+    case youtube(String) // found by SongFinder (personal use), cached locally
 }
 
 struct TrackInfo: Identifiable, Hashable, Sendable {
@@ -16,6 +17,7 @@ struct TrackInfo: Identifiable, Hashable, Sendable {
     var license: String?
     var page: URL?
     var duration: Double?
+    var thumb: URL? = nil
 
     var hue: Double {   // a stable colour per track for labels + ambient light
         var h: UInt64 = 1469598103934665603
@@ -44,6 +46,9 @@ enum Loader {
         switch info.source {
         case .local(let u):
             fileURL = u
+        case .youtube(let id):
+            progress("fetching audio")
+            fileURL = try await SongFinder.fetch(id)
         case .ccmixter(let u):
             progress("streaming")
             var req = URLRequest(url: u)
@@ -62,6 +67,16 @@ enum Loader {
         defer { if access { fileURL.stopAccessingSecurityScopedResource() } }
         let (l, r) = try Decoder.decode(fileURL)
         var art: NSImage?
+        if let t = info.thumb, let (d, _) = try? await URLSession.shared.data(from: t), let img = NSImage(data: d) {
+            // YouTube thumbnails are 4:3 with letterbox bars: crop the centre square for the record label
+            let side = min(img.size.width, img.size.height) * 0.75
+            let crop = NSImage(size: NSSize(width: side, height: side))
+            crop.lockFocus()
+            img.draw(in: NSRect(x: 0, y: 0, width: side, height: side),
+                     from: NSRect(x: (img.size.width - side) / 2, y: (img.size.height - side) / 2, width: side, height: side), operation: .copy, fraction: 1)
+            crop.unlockFocus()
+            art = crop
+        }
         if case .local = info.source {
             let asset = AVURLAsset(url: fileURL)
             if let items = try? await asset.load(.commonMetadata),

@@ -70,6 +70,8 @@ slip-mode rolls, brake/spinback, isolator EQs, resonant filters, echo bus, sub-d
 - **Legal music only:** a free crate streamed from [ccMixter](https://ccmixter.org) (Creative Commons Attribution, credited
   on the deck) and your own DRM-free files. Spotify and Apple Music are deliberately not supported: Spotify's developer terms forbid
   mixing, and Apple Music's catalog is DRM-protected.
+- **Find a song:** type a name or paste a Spotify track link. Spotify is only used to read the title and artist (its audio
+  is encrypted and never touched); the audio is fetched from YouTube with `yt-dlp` and cached. For personal experiments only.
 - **Native analysis:** tempo, beat grid, downbeat, hook and scratch word, plus a 3-band waveform, in ~0.2 s per song
   using Accelerate. Beat 1 can be nudged per deck.
 - **You can play too:** keys `1`–`7` fire transitions and `Q W E R` fire fills (quantised to the next bar), plus knobs and a crossfader.

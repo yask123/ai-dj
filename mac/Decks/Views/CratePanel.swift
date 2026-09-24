@@ -16,6 +16,9 @@ struct CratePanel: View {
     @State private var source = 0            // 0 Apple Music · 1 Spotify · 2 Folders
     @State private var note: String?
     @State private var filter = ""
+    @State private var find = ""
+    @State private var found: [TrackInfo] = []
+    @State private var foundLabel: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -30,6 +33,7 @@ struct CratePanel: View {
             Picker("", selection: $tab) {
                 Label("Free crate", systemImage: "globe").tag(0)
                 Label("My music", systemImage: "music.note.house").tag(1)
+                Label("Find", systemImage: "sparkle.magnifyingglass").tag(2)
             }
             .pickerStyle(.segmented)
 
@@ -46,6 +50,20 @@ struct CratePanel: View {
                 .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.06)))
                 list(results)
                 Text("Streamed from ccMixter. Every track here is Creative Commons Attribution: free to remix, credit shown on the deck.")
+                    .font(.system(size: 10.5)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+            } else if tab == 2 {
+                HStack(spacing: 8) {
+                    Image(systemName: "sparkle.magnifyingglass").foregroundStyle(.secondary)
+                    TextField("Song, artist, or a Spotify link", text: $find).textFieldStyle(.plain).onSubmit { findSongs() }
+                    if busy { ProgressView().controlSize(.small) }
+                }
+                .padding(.horizontal, 12).padding(.vertical, 9)
+                .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.06)))
+                if let l = foundLabel {
+                    Label(l, systemImage: "link").font(.system(size: 11, weight: .medium)).foregroundStyle(.secondary).lineLimit(1)
+                }
+                list(found)
+                Text("Paste a Spotify track link and Decks reads its title and artist (never Spotify's audio, which is encrypted), then fetches the song from YouTube with yt-dlp. For personal experiments; respect artists' rights.")
                     .font(.system(size: 10.5)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             } else {
                 Picker("", selection: $source) {
@@ -96,7 +114,7 @@ struct CratePanel: View {
                     })
                 }
                 if !busy && items.isEmpty {
-                    Text(tab == 0 ? "Nothing found." : "No songs yet.").font(.system(size: 12)).foregroundStyle(.secondary).padding(30)
+                    Text(tab == 2 ? (find.isEmpty ? "Try “Levels Avicii” or paste open.spotify.com/track/…" : "Nothing found.") : tab == 0 ? "Nothing found." : "No songs yet.").font(.system(size: 12)).foregroundStyle(.secondary).padding(30)
                 }
             }
         }
@@ -110,6 +128,16 @@ struct CratePanel: View {
         Task.detached(priority: .userInitiated) {
             let r = src == 0 ? LocalLibrary.appleMusic() : src == 1 ? LocalLibrary.spotifyLocalFiles() : LocalLibrary.scanFolders()
             await MainActor.run { mine = r.tracks; note = r.note; busy = false }
+        }
+    }
+
+    private func findSongs() {
+        guard !find.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+        busy = true; found = []; foundLabel = nil
+        Task {
+            do { let r = try await SongFinder.search(find); found = r.tracks; foundLabel = r.label }
+            catch { booth.error = error.localizedDescription }
+            busy = false
         }
     }
 
@@ -134,6 +162,12 @@ private struct Row: View {
                 .fill(LinearGradient(colors: [t.color, t.deepColor], startPoint: .topLeading, endPoint: .bottomTrailing))
                 .frame(width: 38, height: 38)
                 .overlay(Image(systemName: t.isFree ? "waveform" : "music.note").font(.system(size: 14, weight: .semibold)).foregroundStyle(.black.opacity(0.55)))
+                .overlay {
+                    if let u = t.thumb {
+                        AsyncImage(url: u) { $0.resizable().scaledToFill() } placeholder: { Color.clear }
+                            .frame(width: 38, height: 38).clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                }
             VStack(alignment: .leading, spacing: 2) {
                 Text(t.title).font(.system(size: 13, weight: .semibold, design: .rounded)).lineLimit(1)
                 HStack(spacing: 6) {
