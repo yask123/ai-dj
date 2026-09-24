@@ -12,6 +12,10 @@ struct CratePanel: View {
     @State private var mine: [TrackInfo] = []
     @State private var busy = false
     @State private var importing = false
+    @State private var addingFolder = false
+    @State private var source = 0            // 0 Apple Music · 1 Spotify · 2 Folders
+    @State private var note: String?
+    @State private var filter = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -44,29 +48,53 @@ struct CratePanel: View {
                 Text("Streamed from ccMixter. Every track here is Creative Commons Attribution: free to remix, credit shown on the deck.")
                     .font(.system(size: 10.5)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             } else {
-                Button { importing = true } label: {
-                    Label("Add songs from your Mac…", systemImage: "plus").frame(maxWidth: .infinity).padding(.vertical, 6)
+                Picker("", selection: $source) {
+                    Label("Music", systemImage: "music.note").tag(0)
+                    Label("Spotify", systemImage: "antenna.radiowaves.left.and.right").tag(1)
+                    Label("Folders", systemImage: "folder").tag(2)
                 }
-                .buttonStyle(.glass)
-                list(mine)
-                Text("DRM-free files you own (MP3, M4A, WAV, AIFF, FLAC). Drag them straight onto a deck too. Nothing is copied.")
+                .pickerStyle(.segmented)
+                .onChange(of: source) { scanLocal() }
+                HStack(spacing: 8) {
+                    Image(systemName: "line.3.horizontal.decrease").foregroundStyle(.secondary)
+                    TextField("filter", text: $filter).textFieldStyle(.plain)
+                    Menu {
+                        Button("Add songs…") { importing = true }
+                        Button("Add a folder…") { addingFolder = true }
+                    } label: { Image(systemName: "plus") }
+                    .menuStyle(.button).buttonStyle(.plain).fixedSize()
+                }
+                .padding(.horizontal, 12).padding(.vertical, 9)
+                .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.06)))
+                list(filter.isEmpty ? mine : mine.filter { ($0.title + " " + $0.artist).localizedCaseInsensitiveContains(filter) })
+                Text(note ?? "Unprotected files on this Mac. Streaming-service downloads are DRM-encrypted and can't be mixed by any app.")
                     .font(.system(size: 10.5)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(18)
         .glassEffect(.regular, in: .rect(cornerRadius: 28))
         .task { if results.isEmpty { search() } }
+        .onChange(of: tab) { if tab == 1 && mine.isEmpty { scanLocal() } }
         .fileImporter(isPresented: $importing, allowedContentTypes: [.audio], allowsMultipleSelection: true) { r in
             guard case .success(let urls) = r else { return }
-            Task { for u in urls { _ = u.startAccessingSecurityScopedResource(); mine.append(await Loader.localInfo(u)) } }
+            Task { for u in urls { _ = u.startAccessingSecurityScopedResource(); mine.insert(await Loader.localInfo(u), at: 0) } }
         }
+        .background(EmptyView().fileImporter(isPresented: $addingFolder, allowedContentTypes: [.folder]) { r in
+            guard case .success(let u) = r else { return }
+            LocalLibrary.addFolder(u); source = 2; scanLocal()
+        })
     }
 
     @ViewBuilder private func list(_ items: [TrackInfo]) -> some View {
         ScrollView {
             LazyVStack(spacing: 4) {
                 if busy { ProgressView().padding(30) }
-                ForEach(items) { t in Row(t: t, load: { d in booth.load(t, deck: d) }) }
+                ForEach(items) { t in
+                    Row(t: t, target: target, load: { d in
+                        booth.load(t, deck: d)
+                        if booth.tracks[1 - d] == nil && booth.loadingText[1 - d] == nil { target = 1 - d }
+                    })
+                }
                 if !busy && items.isEmpty {
                     Text(tab == 0 ? "Nothing found." : "No songs yet.").font(.system(size: 12)).foregroundStyle(.secondary).padding(30)
                 }
@@ -74,6 +102,15 @@ struct CratePanel: View {
         }
         .scrollIndicators(.hidden)
         .frame(maxHeight: .infinity)
+    }
+
+    private func scanLocal() {
+        busy = true; mine = []; note = nil
+        let src = source
+        Task.detached(priority: .userInitiated) {
+            let r = src == 0 ? LocalLibrary.appleMusic() : src == 1 ? LocalLibrary.spotifyLocalFiles() : LocalLibrary.scanFolders()
+            await MainActor.run { mine = r.tracks; note = r.note; busy = false }
+        }
     }
 
     private func search() {
@@ -88,6 +125,7 @@ struct CratePanel: View {
 
 private struct Row: View {
     let t: TrackInfo
+    var target: Int
     var load: (Int) -> Void
     @State private var hover = false
     var body: some View {
@@ -120,6 +158,7 @@ private struct Row: View {
         .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(hover ? 0.07 : 0)))
         .contentShape(Rectangle())
         .onHover { h in withAnimation(.easeOut(duration: 0.12)) { hover = h } }
-        .onTapGesture(count: 2) { load(1) }
+        .onTapGesture { load(target) }
+        .help("Click to load onto deck \(target == 0 ? "A" : "B")")
     }
 }

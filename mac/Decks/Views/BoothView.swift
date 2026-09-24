@@ -36,6 +36,19 @@ struct BoothView: View {
                         .transition(.move(edge: .trailing).combined(with: .opacity))
                 }
             }
+            if let e = booth.error {
+                VStack {
+                    Label(e, systemImage: "exclamationmark.triangle.fill")
+                        .font(.system(size: 13, weight: .medium, design: .rounded)).lineLimit(2)
+                        .padding(.horizontal, 18).padding(.vertical, 12)
+                        .glassEffect(.regular.tint(ember.opacity(0.35)), in: .capsule)
+                        .onTapGesture { booth.error = nil }
+                        .task(id: e) { try? await Task.sleep(for: .seconds(6)); if booth.error == e { withAnimation { booth.error = nil } } }
+                    Spacer()
+                }
+                .padding(.top, 84)
+                .transition(.move(edge: .top).combined(with: .opacity))
+            }
             VStack { Spacer(); HStack { Console(booth: booth).frame(width: 380); Spacer() } }
                 .padding(.leading, 22).padding(.bottom, 104)
                 .allowsHitTesting(false)

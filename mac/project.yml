@@ -12,6 +12,8 @@ targets:
     type: application
     platform: macOS
     sources: [Decks]
+    dependencies:
+      - sdk: iTunesLibrary.framework
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.yask.decks
@@ -19,6 +21,7 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Decks
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.music
+        INFOPLIST_KEY_NSAppleMusicUsageDescription: "Decks reads your Music library to find songs you own that can be mixed. Protected Apple Music downloads are never touched."
         INFOPLIST_KEY_NSHumanReadableCopyright: "Decks · an AI DJ, live · MIT"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_IDENTITY: "-"

@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		13CD7A099781009C91204C09 /* DecksApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18584D78DA2F28EAA1615035 /* DecksApp.swift */; };
+		1B015B9A6008E79F7898CCC3 /* iTunesLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD8C8358BB9815BE2213D9C1 /* iTunesLibrary.framework */; };
 		22AC09933F3AB3BF827C0553 /* Booth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B320060BE77842839572E40 /* Booth.swift */; };
 		2817C054FACFE60765963DD0 /* CratePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B876500B774D1F639BA7B3 /* CratePanel.swift */; };
 		331A9A633000F090FD6069FB /* Jev.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C8C97B8C18766A054931D1F /* Jev.swift */; };
 		3939931C0690D98854F2B25D /* DJCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9588B7B97A04112DE391F4F /* DJCore.swift */; };
 		5F0A6A7A83E7DD05F0E12E6B /* Turntable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3492DC50185E1148F9ADE22C /* Turntable.swift */; };
 		6204E3CE15D70479DD8C8101 /* BoothView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17232D1E9B4E5AFF363AACAF /* BoothView.swift */; };
+		66626286959A71C366BC6AF3 /* Library.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EE93A494F4DE97C0517220 /* Library.swift */; };
 		67AC98D7ADDE9C05C0A63E51 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BB3CE7AC9AD045CE8B38AB0 /* AudioEngine.swift */; };
 		765E02AEAE077A31CB28D143 /* Analyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8678CD3F38FECA6C5F653DF /* Analyzer.swift */; };
 		920865950E8B527059C1A330 /* Crate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF91CFF3501D1BB03221DAAB /* Crate.swift */; };
@@ -29,17 +31,31 @@
 		3492DC50185E1148F9ADE22C /* Turntable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Turntable.swift; sourceTree = "<group>"; };
 		4B320060BE77842839572E40 /* Booth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Booth.swift; sourceTree = "<group>"; };
 		853AA9206DE089FA935612DB /* Decks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Decks.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		93EE93A494F4DE97C0517220 /* Library.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Library.swift; sourceTree = "<group>"; };
 		A12BAA51C65B759934ACB5E4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B9588B7B97A04112DE391F4F /* DJCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DJCore.swift; sourceTree = "<group>"; };
 		CF91CFF3501D1BB03221DAAB /* Crate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Crate.swift; sourceTree = "<group>"; };
 		F8678CD3F38FECA6C5F653DF /* Analyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Analyzer.swift; sourceTree = "<group>"; };
+		FD8C8358BB9815BE2213D9C1 /* iTunesLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iTunesLibrary.framework; path = System/Library/Frameworks/iTunesLibrary.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4F198F13C6E34B38E35815DD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1B015B9A6008E79F7898CCC3 /* iTunesLibrary.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		1982F8B92BF9311B3E48B498 = {
 			isa = PBXGroup;
 			children = (
 				2E1DC23A9F3DED6094F66B03 /* Decks */,
+				EEBEAB2D124DB7BEC99A8E59 /* Frameworks */,
 				642D1640879A7CB6D28361F6 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -87,6 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				CF91CFF3501D1BB03221DAAB /* Crate.swift */,
+				93EE93A494F4DE97C0517220 /* Library.swift */,
 			);
 			path = Crate;
 			sourceTree = "<group>";
@@ -110,6 +127,14 @@
 			path = Audio;
 			sourceTree = "<group>";
 		};
+		EEBEAB2D124DB7BEC99A8E59 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FD8C8358BB9815BE2213D9C1 /* iTunesLibrary.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -119,6 +144,7 @@
 			buildPhases = (
 				C896EE76855FB9DBCEF5D7C7 /* Sources */,
 				D2C5C6F304C58FD6DB30E36F /* Resources */,
+				4F198F13C6E34B38E35815DD /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -189,6 +215,7 @@
 				3939931C0690D98854F2B25D /* DJCore.swift in Sources */,
 				13CD7A099781009C91204C09 /* DecksApp.swift in Sources */,
 				331A9A633000F090FD6069FB /* Jev.swift in Sources */,
+				66626286959A71C366BC6AF3 /* Library.swift in Sources */,
 				5F0A6A7A83E7DD05F0E12E6B /* Turntable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -208,6 +235,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Decks;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Decks reads your Music library to find songs you own that can be mixed. Protected Apple Music downloads are never touched.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Decks · an AI DJ, live · MIT";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -352,6 +380,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Decks;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Decks reads your Music library to find songs you own that can be mixed. Protected Apple Music downloads are never touched.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Decks · an AI DJ, live · MIT";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

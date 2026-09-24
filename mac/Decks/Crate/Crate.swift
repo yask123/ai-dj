@@ -46,7 +46,12 @@ enum Loader {
             fileURL = u
         case .ccmixter(let u):
             progress("streaming")
-            let (tmp, _) = try await URLSession.shared.download(from: u)
+            var req = URLRequest(url: u)
+            req.setValue("https://ccmixter.org/", forHTTPHeaderField: "Referer")   // ccMixter blocks hotlinks without it
+            let (tmp, resp) = try await URLSession.shared.download(for: req)
+            if let h = resp as? HTTPURLResponse, h.statusCode >= 300 || !(h.mimeType ?? "audio").hasPrefix("audio") {
+                throw NSError(domain: "Decks", code: h.statusCode, userInfo: [NSLocalizedDescriptionKey: "ccMixter refused the stream (HTTP \(h.statusCode))"])
+            }
             let dst = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + "." + (u.pathExtension.isEmpty ? "mp3" : u.pathExtension))
             try FileManager.default.moveItem(at: tmp, to: dst)
             fileURL = dst; tempToDelete = dst
@@ -103,8 +108,8 @@ enum CCMixter {
                   let f = files.first(where: { (($0["file_format_info"] as? [String: Any])?["mime_type"] as? String) == "audio/mpeg" }),
                   let dl = f["download_url"] as? String, let url = URL(string: dl) else { return nil }
             let extra = t["upload_extra"] as? [String: Any]
-            let bpmStr = (extra?["bpm"] as? String) ?? ""
-            let bpm = Double(bpmStr.prefix { $0.isNumber || $0 == "." })
+            let bpmAny = extra?["bpm"]
+            let bpm = (bpmAny as? Double) ?? (bpmAny as? Int).map(Double.init) ?? Double(String(describing: bpmAny ?? "").prefix { $0.isNumber || $0 == "." })
             let page = (t["file_page_url"] as? String).flatMap(URL.init(string:))
             return TrackInfo(id: dl, title: name, artist: user, source: .ccmixter(url), bpmHint: bpm,
                              license: (t["license_name"] as? String).map { "CC " + $0 }, page: page)
