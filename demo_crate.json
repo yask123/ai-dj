@@ -1,0 +1,32 @@
+{
+ "not_like_us": {
+  "title": "Kendrick Lamar \u2013 Not Like Us",
+  "hook": 31,
+  "hook_len": 8,
+  "stab": 126.008,
+  "stab_len": 0.9,
+  "hook_desc": "hook chant: 'they not like us'",
+  "vibe": "stomping West Coast hype chant",
+  "energy": "very high",
+  "word": "not like us",
+  "cues": [
+   31,
+   69
+  ]
+ },
+ "get_low": {
+  "title": "Lil Jon \u2013 Get Low",
+  "hook": 98,
+  "hook_len": 12,
+  "stab": 392.431,
+  "stab_len": 1.1,
+  "hook_desc": "'get low\u2026 to the window, to the wall'",
+  "vibe": "rowdy crunk party chant",
+  "energy": "very high",
+  "word": "get low",
+  "cues": [
+   98,
+   71
+  ]
+ }
+}

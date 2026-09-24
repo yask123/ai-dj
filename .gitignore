@@ -1,0 +1,21 @@
+# secrets
+.openrouter_key
+.typesafe_key
+.dj_key
+.env
+# audio + derived data (copyrighted music never goes in the repo)
+tracks/
+stems/
+cache/
+out/
+library/
+site/dj/media/
+# local tooling
+.venv/
+__pycache__/
+.deploy/
+.vercel-link/
+.vercel/
+.claude/
+*.log
+.DS_Store

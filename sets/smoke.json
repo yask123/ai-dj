@@ -1,0 +1,129 @@
+{
+ "bpm": 125,
+ "bars": 16,
+ "clips": [
+  {
+   "id": "A",
+   "track": "losing_it",
+   "from_bar": 64,
+   "at": 0,
+   "bars": 12,
+   "auto": {
+    "filter": [
+     [
+      6,
+      0
+     ],
+     [
+      8,
+      0.7
+     ]
+    ],
+    "low": [
+     [
+      7.75,
+      0
+     ],
+     [
+      8,
+      -60
+     ]
+    ]
+   },
+   "fx": [
+    {
+     "type": "loop_roll",
+     "at": 10,
+     "bars": 1,
+     "size": 0.5
+    },
+    {
+     "type": "loop_roll",
+     "at": 11,
+     "bars": 0.5,
+     "size": 0.25
+    },
+    {
+     "type": "loop_roll",
+     "at": 11.5,
+     "bars": 0.5,
+     "size": 0.125
+    }
+   ]
+  },
+  {
+   "id": "B",
+   "track": "levels",
+   "from_bar": 20,
+   "at": 8,
+   "bars": 8,
+   "stems": [
+    "drums",
+    "bass",
+    "other"
+   ],
+   "auto": {
+    "low": [
+     [
+      8,
+      -60
+     ],
+     [
+      12,
+      -60
+     ],
+     [
+      12,
+      0
+     ]
+    ],
+    "gain": [
+     [
+      8,
+      -12
+     ],
+     [
+      10,
+      0
+     ]
+    ]
+   },
+   "fx": [
+    {
+     "type": "echo_out",
+     "at": 15
+    }
+   ]
+  }
+ ],
+ "events": [
+  {
+   "type": "noise_riser",
+   "at": 8,
+   "bars": 4,
+   "gain": -10
+  }
+ ],
+ "moves": [
+  {
+   "at": 0,
+   "text": "Losing It"
+  },
+  {
+   "at": 6,
+   "text": "Filter sweep"
+  },
+  {
+   "at": 8,
+   "text": "Bass kill + riser"
+  },
+  {
+   "at": 10,
+   "text": "Loop roll"
+  },
+  {
+   "at": 15,
+   "text": "Echo out"
+  }
+ ]
+}

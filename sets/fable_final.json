@@ -1,0 +1,329 @@
+{
+ "bpm": 125,
+ "bars": 24,
+ "clips": [
+  {
+   "id": "A_losing_hook",
+   "track": "losing_it",
+   "from_bar": 64,
+   "at": 0,
+   "bars": 4,
+   "stems": "mix",
+   "auto": {
+    "gain": [
+     [
+      0,
+      -2
+     ]
+    ],
+    "filter": [
+     [
+      0,
+      0.25
+     ],
+     [
+      2,
+      0
+     ]
+    ],
+    "low": [
+     [
+      3.75,
+      0
+     ],
+     [
+      4,
+      -60
+     ]
+    ]
+   }
+  },
+  {
+   "id": "A_drums",
+   "track": "losing_it",
+   "from_bar": 68,
+   "at": 4,
+   "bars": 12,
+   "stems": [
+    "drums"
+   ],
+   "auto": {
+    "gain": [
+     [
+      4,
+      0
+     ],
+     [
+      15.75,
+      0
+     ],
+     [
+      15.75,
+      -60
+     ]
+    ],
+    "filter": [
+     [
+      8,
+      0
+     ],
+     [
+      12,
+      0.45
+     ],
+     [
+      15.75,
+      0.85
+     ]
+    ]
+   },
+   "fx": [
+    {
+     "type": "loop_roll",
+     "at": 14,
+     "bars": 1,
+     "size": 1
+    },
+    {
+     "type": "loop_roll",
+     "at": 15,
+     "bars": 0.5,
+     "size": 0.5
+    },
+    {
+     "type": "loop_roll",
+     "at": 15.5,
+     "bars": 0.25,
+     "size": 0.25
+    }
+   ]
+  },
+  {
+   "id": "B_bloom_vox",
+   "track": "innerbloom",
+   "from_bar": 48,
+   "at": 4,
+   "bars": 12,
+   "stems": [
+    "other",
+    "vocals"
+   ],
+   "auto": {
+    "gain": [
+     [
+      4,
+      0
+     ]
+    ],
+    "other": [
+     [
+      4,
+      -8
+     ],
+     [
+      12,
+      -6
+     ],
+     [
+      15.75,
+      -6
+     ],
+     [
+      15.75,
+      -60
+     ]
+    ],
+    "vocals": [
+     [
+      4,
+      1
+     ]
+    ],
+    "reverb": [
+     [
+      4,
+      0.1
+     ],
+     [
+      10.5,
+      0.15
+     ],
+     [
+      10.75,
+      0.9
+     ],
+     [
+      11.25,
+      0.9
+     ],
+     [
+      11.75,
+      0.2
+     ],
+     [
+      12,
+      0.2
+     ],
+     [
+      15.5,
+      0.5
+     ]
+    ],
+    "echo": [
+     [
+      14,
+      0
+     ],
+     [
+      15.5,
+      0.35
+     ]
+    ]
+   },
+   "fx": [
+    {
+     "type": "gate",
+     "at": 15,
+     "bars": 0.75,
+     "rate": 0.5
+    },
+    {
+     "type": "echo_out",
+     "at": 15.75
+    }
+   ]
+  },
+  {
+   "id": "A_drop",
+   "track": "losing_it",
+   "from_bar": 104,
+   "at": 16,
+   "bars": 8,
+   "stems": "mix",
+   "auto": {
+    "gain": [
+     [
+      16,
+      0
+     ]
+    ]
+   },
+   "fx": [
+    {
+     "type": "loop_roll",
+     "at": 19.5,
+     "bars": 0.25,
+     "size": 0.5
+    },
+    {
+     "type": "loop_roll",
+     "at": 19.75,
+     "bars": 0.25,
+     "size": 0.25
+    },
+    {
+     "type": "echo_out",
+     "at": 24
+    }
+   ]
+  },
+  {
+   "id": "B_bloom_drop_vox",
+   "track": "innerbloom",
+   "from_bar": 48,
+   "at": 20,
+   "bars": 4,
+   "stems": [
+    "vocals"
+   ],
+   "auto": {
+    "vocals": [
+     [
+      20,
+      1
+     ]
+    ],
+    "reverb": [
+     [
+      20,
+      0.15
+     ]
+    ],
+    "echo": [
+     [
+      23,
+      0
+     ],
+     [
+      23.75,
+      0.4
+     ]
+    ]
+   },
+   "fx": [
+    {
+     "type": "echo_out",
+     "at": 24
+    }
+   ]
+  }
+ ],
+ "events": [
+  {
+   "type": "noise_riser",
+   "at": 11.75,
+   "bars": 4,
+   "gain": -10
+  }
+ ],
+ "moves": [
+  {
+   "at": 0,
+   "text": "LOSING IT \u2014 filter opens"
+  },
+  {
+   "at": 4,
+   "text": "CUT: bass + synth killed, drums only"
+  },
+  {
+   "at": 4,
+   "text": "INNERBLOOM acapella + pads (6B over 6A)"
+  },
+  {
+   "at": 8,
+   "text": "HI-PASS sweep on drums"
+  },
+  {
+   "at": 10.75,
+   "text": "REVERB THROW"
+  },
+  {
+   "at": 12,
+   "text": "NOISE RISER"
+  },
+  {
+   "at": 14,
+   "text": "LOOP ROLL 1 \u2192 1/2 \u2192 1/4"
+  },
+  {
+   "at": 15.75,
+   "text": "DROP GAP"
+  },
+  {
+   "at": 16,
+   "text": "DROP \u2014 LOSING IT"
+  },
+  {
+   "at": 19.5,
+   "text": "ROLL FILL \u2192 RE-DROP"
+  },
+  {
+   "at": 20,
+   "text": "MASHUP: 'If you want me' over the bass"
+  },
+  {
+   "at": 24,
+   "text": "ECHO OUT"
+  }
+ ]
+}

@@ -1,0 +1,61 @@
+{
+  "bpm": 126,
+  "bars": 21,
+  "clips": [
+    {"id": "OMT_INST", "track": "one_more_time", "from_bar": 32, "at": 0, "bars": 11.5, "pitch": 2,
+     "stems": ["drums", "bass", "other"],
+     "auto": {
+       "gain":   [[0, -2], [11.5, -2]],
+       "bass":   [[3.75, 0], [4, -60]],
+       "other":  [[4, 0], [5, -60]],
+       "filter": [[8, 0], [11.5, 0.7]]
+     },
+     "fx": [
+       {"type": "loop_roll", "at": 10.5, "bars": 0.5, "size": 1},
+       {"type": "loop_roll", "at": 11, "bars": 0.25, "size": 0.5},
+       {"type": "loop_roll", "at": 11.25, "bars": 0.25, "size": 0.25}
+     ]},
+    {"id": "OMT_VOX", "track": "one_more_time", "from_bar": 32, "at": 0, "bars": 11.5, "pitch": 2,
+     "stems": ["vocals"],
+     "fx": [
+       {"type": "loop_roll", "at": 8.5, "bars": 2, "size": 2},
+       {"type": "loop_roll", "at": 10.5, "bars": 0.5, "size": 1},
+       {"type": "loop_roll", "at": 11, "bars": 0.25, "size": 0.5},
+       {"type": "loop_roll", "at": 11.25, "bars": 0.25, "size": 0.25}
+     ]},
+    {"id": "LEV_RIFF", "track": "levels", "from_bar": 4, "at": 4, "bars": 7.5,
+     "auto": {
+       "filter": [[4, -0.6], [6, 0], [9, 0], [11.5, 0.5]],
+       "low":    [[4, -60], [11.5, -60]]
+     },
+     "fx": [
+       {"type": "loop_roll", "at": 10.5, "bars": 0.5, "size": 1},
+       {"type": "loop_roll", "at": 11, "bars": 0.25, "size": 0.5},
+       {"type": "loop_roll", "at": 11.25, "bars": 0.25, "size": 0.25}
+     ]},
+    {"id": "SHOUT_GAP", "track": "one_more_time", "from_bar": 47.5, "at": 11.5, "bars": 0.75, "pitch": 2,
+     "stems": ["vocals"],
+     "auto": {"reverb": [[11.5, 0.35], [12.25, 0.35]], "echo": [[11.9, 0], [12, 0.4], [12.25, 0.4]]}},
+    {"id": "LEV_DROP", "track": "levels", "from_bar": 12, "at": 12, "bars": 8,
+     "fx": [{"type": "brake", "at": 19.5, "beats": 2}]},
+    {"id": "OMT_VOX2", "track": "one_more_time", "from_bar": 32.5, "at": 16.5, "bars": 3.5, "pitch": 2,
+     "stems": ["vocals"]},
+    {"id": "SHOUT_END", "track": "one_more_time", "from_bar": 47.5, "at": 20, "bars": 0.75, "pitch": 2,
+     "stems": ["vocals"],
+     "auto": {"reverb": [[20, 0.25], [20.75, 0.25]]},
+     "fx": [{"type": "echo_out", "at": 20.75}]}
+  ],
+  "events": [{"type": "noise_riser", "at": 8, "bars": 3.5, "gain": -12}],
+  "moves": [
+    {"at": 0, "text": "ONE MORE TIME (+2 sped-up)"},
+    {"at": 4, "text": "BASS KILL -> LEVELS RIFF IN"},
+    {"at": 8, "text": "HPF SWEEP + NOISE RISER"},
+    {"at": 8.5, "text": "VOCAL LOOP: ONE MORE TIME x4"},
+    {"at": 10.5, "text": "LOOP ROLL 1 -> 1/2 -> 1/4"},
+    {"at": 11.5, "text": "DROP GAP: ACAPELLA"},
+    {"at": 12, "text": "LEVELS DROP"},
+    {"at": 16.5, "text": "DAFT PUNK x AVICII"},
+    {"at": 19.5, "text": "BRAKE"},
+    {"at": 20, "text": "ONE MORE TIME... (echo out)"}
+  ]
+}

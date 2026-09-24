@@ -1,0 +1,20 @@
+# audio analysis + DSP
+numpy>=2.0
+scipy>=1.13
+soundfile>=0.12
+librosa>=0.10
+pyrubberband>=0.4
+pedalboard>=0.9
+matplotlib>=3.8
+pillow>=10
+# stems + beats
+torch>=2.3
+torchaudio>=2.3
+demucs>=4.0
+beat-this>=1.1
+# web app
+fastapi>=0.110
+uvicorn>=0.29
+# optional: live speaker playback (--live), lyric-timed hot cues on Apple Silicon
+sounddevice>=0.4
+mlx-whisper>=0.4 ; sys_platform == "darwin"

@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI DJ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0b0c; --panel: #131315; --line: #232326; --ink: #ececec; --dim: #7c7c80; --faint: #3a3a3e;
+    --acc: #ff5a36; --a: #ff5a36; --b: #3fb6ff;
+    --cond: "Barlow Condensed", "DIN Condensed", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--cond); }
+  body { min-height: 100vh; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 36px 20px 80px; }
+  header { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
+  h1 { font-size: 64px; line-height: 1; margin: 0; font-weight: 700; letter-spacing: .5px; }
+  h1 span { color: var(--acc); }
+  .tag { color: var(--dim); font-size: 22px; letter-spacing: .6px; text-transform: uppercase; }
+
+  .decks { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 34px; }
+  .deck { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 22px; position: relative; }
+  .deck-head { display: flex; justify-content: space-between; align-items: baseline; color: var(--dim); font-size: 20px; letter-spacing: 1px; }
+  .deck-head b { font-size: 34px; color: var(--ink); }
+  .vinyl-row { display: flex; gap: 20px; align-items: center; margin: 14px 0 16px; }
+  .vinyl { flex: none; width: 150px; height: 150px; border-radius: 50%; position: relative;
+    background: repeating-radial-gradient(circle at 50% 50%, #151517 0 2px, #1d1d20 2px 3px);
+    box-shadow: 0 0 0 5px #1a1a1c, inset 0 0 0 1px #000; }
+  .vinyl::after { content: ""; position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(from 200deg, transparent 0 20deg, rgba(255,255,255,.07) 20deg 40deg, transparent 40deg 200deg, rgba(255,255,255,.04) 200deg 220deg, transparent 220deg); }
+  .label { position: absolute; inset: 44px; border-radius: 50%; background: var(--faint) center/cover; transition: background .3s; }
+  .label::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px; border-radius: 50%; background: var(--bg); }
+  .deck.a .label.on { box-shadow: 0 0 0 3px var(--a); } .deck.b .label.on { box-shadow: 0 0 0 3px var(--b); }
+  .spin .label { animation: spin 1.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .picked { min-width: 0; }
+  .picked .t { font-size: 28px; font-weight: 700; line-height: 1.05; overflow-wrap: anywhere; }
+  .picked .s { color: var(--dim); font-size: 18px; margin-top: 4px; }
+  .search { display: flex; gap: 8px; }
+  input[type=text] { flex: 1; min-width: 0; background: #0e0e10; border: 1px solid var(--line); color: var(--ink); border-radius: 10px;
+    padding: 12px 14px; font: 500 16px var(--mono); outline: none; }
+  input[type=text]:focus { border-color: var(--faint); }
+  .results { margin-top: 10px; display: grid; gap: 6px; max-height: 300px; overflow: auto; }
+  .res { display: flex; gap: 10px; align-items: center; padding: 6px; border-radius: 10px; cursor: pointer; border: 1px solid transparent; }
+  .res:hover { background: #1a1a1d; border-color: var(--line); }
+  .res img { width: 64px; height: 36px; object-fit: cover; border-radius: 6px; flex: none; }
+  .res .rt { font-size: 18px; line-height: 1.1; }
+  .res .rs { font: 12px var(--mono); color: var(--dim); }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .chip { font: 12px var(--mono); color: var(--dim); border: 1px solid var(--line); border-radius: 99px; padding: 4px 10px; cursor: pointer; background: none; }
+  .chip:hover { color: var(--ink); border-color: var(--faint); }
+
+  .controls { margin-top: 20px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 20px 22px;
+    display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: end; }
+  .lbl { color: var(--dim); font-size: 18px; letter-spacing: 1px; margin-bottom: 10px; }
+  .brains { display: flex; gap: 8px; flex-wrap: wrap; }
+  .brain { text-align: left; background: #0e0e10; color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; cursor: pointer; font-family: var(--cond); }
+  .brain .n { font-size: 22px; font-weight: 700; }
+  .brain .m { font: 11px var(--mono); color: var(--dim); }
+  .brain.sel { border-color: var(--acc); box-shadow: inset 0 0 0 1px var(--acc); }
+  .lens { display: flex; gap: 6px; margin-top: 14px; align-items: center; }
+  .len { background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 99px; padding: 5px 12px; font: 13px var(--mono); cursor: pointer; }
+  .len.sel { color: var(--ink); border-color: var(--faint); background: #1a1a1d; }
+  .drop { background: var(--acc); color: #0b0b0c; border: 0; border-radius: 14px; padding: 18px 34px; font: 700 34px var(--cond); letter-spacing: 1px; cursor: pointer; }
+  .drop:disabled { background: #2a2a2d; color: #5a5a5e; cursor: not-allowed; }
+
+  .live { display: none; margin-top: 20px; gap: 20px; grid-template-columns: 1fr 1fr; }
+  .live.on { display: grid; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; min-width: 0; }
+  .card h3 { margin: 0 0 12px; font-size: 20px; letter-spacing: 1px; color: var(--dim); font-weight: 600; }
+  .steps { font: 13px/1.7 var(--mono); color: var(--dim); }
+  .steps div.cur { color: var(--ink); }
+  .steps div.cur::before { content: "● "; color: var(--acc); animation: blink 1s infinite; }
+  .steps div.ok::before { content: "✓ "; color: #5a5a5e; }
+  .steps .trk { color: var(--ink); }
+  @keyframes blink { 50% { opacity: .2; } }
+  .feed { font: 13px var(--mono); display: grid; gap: 8px; max-height: 420px; overflow: auto; }
+  .dec { display: grid; grid-template-columns: 54px 1fr; gap: 4px 10px; align-items: center; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  .dec .bar { color: var(--dim); }
+  .dec .mv { color: var(--ink); }
+  .dec .mv b { color: var(--acc); font-weight: 500; }
+  .lat { grid-column: 2; height: 6px; background: #1c1c1f; border-radius: 3px; position: relative; }
+  .lat i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ink); border-radius: 3px; }
+  .lat.late i { background: var(--acc); }
+  .lat u { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--acc); opacity: .6; }
+  .dec .meta { grid-column: 2; color: var(--dim); font-size: 11px; }
+  .result { display: none; margin-top: 20px; grid-template-columns: auto 1fr; gap: 24px; align-items: start; }
+  .result.on { display: grid; }
+  video { height: min(78vh, 820px); aspect-ratio: 9/16; border-radius: 16px; background: #000; border: 1px solid var(--line); }
+  .stats { font-size: 22px; line-height: 1.5; }
+  .stats .big { font-size: 64px; font-weight: 700; line-height: 1; }
+  .stats .dim { color: var(--dim); font-size: 18px; }
+  .btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .btn { background: #1a1a1d; color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; font: 600 20px var(--cond); cursor: pointer; text-decoration: none; }
+  .btn.acc { background: var(--acc); color: #0b0b0c; border-color: var(--acc); }
+  .err { color: var(--acc); font: 13px var(--mono); }
+  .booth { margin-left: auto; display: flex; align-items: center; gap: 8px; font: 12px var(--mono); color: var(--dim); }
+  .booth i { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
+  .booth.on i { background: #5bd67a; box-shadow: 0 0 8px #5bd67a; } .booth.busy i { background: #ffb13b; } .booth.off i { background: var(--acc); }
+  .lock { display: none; margin-top: 18px; gap: 10px; align-items: center; flex-wrap: wrap; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 14px; padding: 14px 16px; font: 13px var(--mono); color: var(--dim); }
+  .lock.on { display: flex; } .lock input { max-width: 220px; }
+  @media (max-width: 760px) {
+    h1 { font-size: 48px; }
+    .decks, .live, .result { grid-template-columns: 1fr; }
+    .controls { grid-template-columns: 1fr; }
+    .vinyl { width: 110px; height: 110px; } .label { inset: 32px; }
+    video { height: auto; width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>AI <span>DJ</span></h1><div class="tag">pick two records · pick a brain · watch it perform</div>
+    <div class="booth" id="booth"><i></i><span>checking the booth…</span></div></header>
+  <form class="lock" id="lock"><span>This booth runs on one Mac. Enter the access key to play.</span>
+    <input type="text" id="keyIn" placeholder="access key" autocomplete="off"><button class="btn acc">UNLOCK</button></form>
+
+  <div class="decks">
+    <div class="deck a" id="deckA">
+      <div class="deck-head"><b>A</b><span>OPENS THE SET</span></div>
+      <div class="vinyl-row"><div class="vinyl"><div class="label"></div></div>
+        <div class="picked"><div class="t">Empty deck</div><div class="s">search a song below</div></div></div>
+      <form class="search"><input type="text" placeholder="search YouTube…" autocomplete="off"></form>
+      <div class="chips"></div>
+      <div class="results"></div>
+    </div>
+    <div class="deck b" id="deckB">
+      <div class="deck-head"><b>B</b><span>COMES IN HOT</span></div>
+      <div class="vinyl-row"><div class="vinyl"><div class="label"></div></div>
+        <div class="picked"><div class="t">Empty deck</div><div class="s">search a song below</div></div></div>
+      <form class="search"><input type="text" placeholder="search YouTube…" autocomplete="off"></form>
+      <div class="chips"></div>
+      <div class="results"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div>
+      <div class="lbl">WHO'S ON THE DECKS</div>
+      <div class="brains" id="brains"></div>
+      <div class="lens"><span class="lbl" style="margin:0 6px 0 0">LENGTH</span>
+        <button class="len sel" data-bars="8">~15s</button><button class="len" data-bars="12">~25s</button><button class="len" data-bars="20">~45s</button></div>
+    </div>
+    <button class="drop" id="drop" disabled>DROP IT</button>
+  </div>
+
+  <div class="live" id="live">
+    <div class="card"><h3>PREP</h3><div class="steps" id="steps"></div></div>
+    <div class="card"><h3 id="feedTitle">DECISIONS</h3><div class="feed" id="feed"></div></div>
+  </div>
+
+  <div class="result" id="result">
+    <video id="video" controls playsinline></video>
+    <div class="stats" id="stats"></div>
+  </div>
+</div>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const state = { A: null, B: null, brain: "jev", bars: 8, brains: [] };
+let API = "", KEY = "";
+try { const h = new URLSearchParams(location.hash.slice(1)).get("key"); if (h) { localStorage.setItem("djkey", h); history.replaceState(null, "", location.pathname); } KEY = localStorage.getItem("djkey") || ""; } catch (e) {}
+const q = (path, extra = "") => `${API}${path}${path.includes("?") ? "&" : "?"}key=${encodeURIComponent(KEY)}${extra}`;
+async function boot() {
+  try { API = (await fetch("/dj/backend.json", { cache: "no-store" }).then(r => r.json())).url || ""; } catch (e) {}
+  const b = $("#booth");
+  try {
+    const h = await fetch(q("/api/health")).then(r => r.json());
+    b.className = "booth " + (h.busy ? "busy" : "on");
+    b.querySelector("span").textContent = h.busy ? "booth busy · you'll queue" : "booth online";
+    $("#lock").classList.toggle("on", !h.authed);
+  } catch (e) {
+    b.className = "booth off"; b.querySelector("span").textContent = "booth offline (the Mac is asleep)";
+  }
+  loadBrains();
+}
+$("#lock").onsubmit = e => { e.preventDefault(); KEY = $("#keyIn").value.trim(); try { localStorage.setItem("djkey", KEY); } catch (e) {} boot(); };
+const SUGGEST = { A: ["Usher Yeah!", "Daft Punk One More Time", "Lil Jon Get Low"], B: ["Sabrina Carpenter Espresso", "Jump Around House of Pain", "Kendrick Not Like Us"] };
+const fmt = s => s ? `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}` : "";
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function setupDeck(key) {
+  const el = $(key === "A" ? "#deckA" : "#deckB");
+  const input = $("input", el), results = $(".results", el), chips = $(".chips", el);
+  const go = async qq => {
+    if (!qq.trim()) return;
+    results.innerHTML = `<div class="rs" style="font:12px var(--mono);color:var(--dim)">digging through the crates…</div>`;
+    const r = await fetch(q(`/api/search?q=${encodeURIComponent(qq)}`)).then(r => r.json()).catch(() => []);
+    results.innerHTML = "";
+    r.forEach(v => {
+      const d = document.createElement("div");
+      d.className = "res";
+      d.innerHTML = `<img src="${esc(v.thumb)}" alt=""><div><div class="rt">${esc(v.title)}</div><div class="rs">${esc(v.channel)} · ${fmt(v.duration)}</div></div>`;
+      d.onclick = () => pick(key, v);
+      results.appendChild(d);
+    });
+  };
+  $("form", el).onsubmit = e => { e.preventDefault(); go(input.value); };
+  SUGGEST[key].forEach(s => { const c = document.createElement("button"); c.className = "chip"; c.textContent = s; c.onclick = () => { input.value = s; go(s); }; chips.appendChild(c); });
+}
+
+function pick(key, v) {
+  if (v.duration && v.duration > 600) { alert("Keep it under 10 minutes for now."); return; }
+  state[key] = v;
+  const el = $(key === "A" ? "#deckA" : "#deckB");
+  const lab = $(".label", el);
+  lab.style.backgroundImage = `url(${v.thumb})`;
+  lab.classList.add("on");
+  $(".picked .t", el).textContent = v.title;
+  $(".picked .s", el).textContent = `${v.channel} · ${fmt(v.duration)}`;
+  $(".results", el).innerHTML = "";
+  $("#drop").disabled = !(state.A && state.B);
+}
+
+async function loadBrains() {
+  if (state.brains.length) return;
+  state.brains = await fetch(`${API}/api/brains`).then(r => r.json());
+  const box = $("#brains");
+  state.brains.forEach(b => {
+    const d = document.createElement("button");
+    d.className = "brain" + (b.id === state.brain ? " sel" : "");
+    d.innerHTML = `<div class="n">${esc(b.name)}</div><div class="m">${esc(b.by)} · ${esc(b.tag)}</div>`;
+    d.onclick = () => { state.brain = b.id; [...box.children].forEach(c => c.classList.remove("sel")); d.classList.add("sel"); };
+    box.appendChild(d);
+  });
+}
+document.querySelectorAll(".len").forEach(b => b.onclick = () => {
+  state.bars = +b.dataset.bars; document.querySelectorAll(".len").forEach(x => x.classList.remove("sel")); b.classList.add("sel");
+});
+
+const NAMES = { scratch_in: "scratch in", chop_cut: "crossfader chops", echo_out_cut: "echo out", spinback_cut: "spinback", brake_cut: "vinyl brake",
+  roll_build_cut: "loop-roll build", drop_gap_cut: "drop gap", scratch_fill: "scratch fill", roll_fill: "roll fill", echo_throw: "echo throw", filter_dip: "filter dip", ride: "let it ride" };
+
+async function drop() {
+  const brainName = state.brains.find(b => b.id === state.brain)?.name || state.brain;
+  $("#drop").disabled = true;
+  $("#live").classList.add("on");
+  $("#result").classList.remove("on");
+  $("#steps").innerHTML = ""; $("#feed").innerHTML = "";
+  $("#feedTitle").textContent = `${brainName.toUpperCase()} · DECISIONS`;
+  document.querySelectorAll(".vinyl").forEach(v => v.classList.add("spin"));
+  $("#live").scrollIntoView({ behavior: "smooth", block: "start" });
+  const res = await fetch(`${API}/api/mix`, { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ a: state.A.id, b: state.B.id, brain: state.brain, bars: state.bars, key: KEY }) });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) { const d = document.createElement("div"); d.className = "err"; d.textContent = "✗ " + (body.detail || res.status); $("#steps").appendChild(d);
+    $("#drop").disabled = false; document.querySelectorAll(".vinyl").forEach(v => v.classList.remove("spin")); return; }
+  const es = new EventSource(q(`/api/jobs/${body.job}/events`));
+  let t0 = null;
+  es.onmessage = m => {
+    const e = JSON.parse(m.data);
+    t0 ??= e.t;
+    if (e.type === "step" || e.type === "track") {
+      [...$("#steps").children].forEach(c => { c.classList.remove("cur"); c.classList.add("ok"); });
+      const d = document.createElement("div");
+      if (e.type === "step") { d.className = "cur"; d.textContent = `${e.text}`; }
+      else { d.className = "ok"; d.innerHTML = `<span class="trk">${esc(e.title)}</span> · ${e.bpm.toFixed(1)} bpm · ${esc(e.key)} (${esc(e.camelot)}) · hook @ bar ${e.hook_bar} · stretch ${e.stretch_pct > 0 ? "+" : ""}${e.stretch_pct}%`; }
+      $("#steps").appendChild(d);
+    } else if (e.type === "decision") {
+      const d = document.createElement("div");
+      d.className = "dec";
+      const pct = Math.min(100, e.ms / (e.budget_ms * 1.25) * 100), bud = e.budget_ms / (e.budget_ms * 1.25) * 100;
+      const p = e.probs && e.probs[e.move] != null ? ` · ${(e.probs[e.move] * 100).toFixed(0)}% sure` : "";
+      const nxt = e.next ? ` → <b>${esc(e.next)}</b>` : "";
+      const bad = e.late ? ` <b>LATE — wanted ${esc(NAMES[e.wanted] || e.wanted)}</b>` : e.invalid ? ` <b>invalid answer</b>` : "";
+      d.innerHTML = `<div class="bar">bar ${e.bar}</div><div class="mv">${esc(NAMES[e.move] || e.move)}${e.scratch ? ` (${esc(e.scratch)})` : ""}${nxt}${bad}</div>
+        <div class="lat ${e.late ? "late" : ""}"><i style="width:${pct}%"></i><u style="left:${bud}%"></u></div>
+        <div class="meta">${e.ms} ms${p} · ${e.options.length} legal moves · lookahead budget ${e.budget_ms} ms</div>`;
+      $("#feed").prepend(d);
+    } else if (e.type === "done") {
+      es.close();
+      [...$("#steps").children].forEach(c => { c.classList.remove("cur"); c.classList.add("ok"); });
+      document.querySelectorAll(".vinyl").forEach(v => v.classList.remove("spin"));
+      const s = e.summary;
+      $("#result").classList.add("on");
+      const v = $("#video"); v.src = API + e.video + "?t=" + Date.now(); v.play().catch(() => {});
+      $("#stats").innerHTML = `<div class="dim">${esc(brainName.toUpperCase())} PERFORMED</div>
+        <div class="big">${s.seconds}s</div>
+        <div>${s.decisions} live decisions · median <b>${Math.round(s.median_ms)} ms</b> · slowest ${Math.round(s.max_ms)} ms</div>
+        <div>${s.late ? `<b style="color:var(--acc)">${s.late} too slow</b> — missed the beat and fell back` : "never missed the beat"}</div>
+        <div class="dim" style="margin-top:10px">${s.songs.map(esc).join("  →  ")}</div>
+        <div class="dim">total ${Math.round(e.t - t0)}s from click to video</div>
+        <div class="btns"><button class="btn acc" id="again">SAME SONGS, OTHER BRAIN</button>
+          <a class="btn" href="${API + e.video}" download>MP4</a><a class="btn" href="${API + e.audio}" download>MP3</a></div>`;
+      $("#again").onclick = () => { $("#drop").disabled = false; window.scrollTo({ top: 0, behavior: "smooth" }); };
+      $("#result").scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (e.type === "error") {
+      es.close();
+      document.querySelectorAll(".vinyl").forEach(v => v.classList.remove("spin"));
+      const d = document.createElement("div"); d.className = "err"; d.textContent = "✗ " + e.text; $("#steps").appendChild(d);
+      $("#drop").disabled = false;
+    }
+  };
+}
+$("#drop").onclick = drop;
+setupDeck("A"); setupDeck("B"); boot();
+</script>
+</body>
+</html>

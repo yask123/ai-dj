@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI DJ — an AI with its hands on the decks</title>
+<meta name="description" content="I gave an AI a pair of turntables. Real songs, real DJ moves, every move a tool call decided live by Jev in ~150 ms. Open source.">
+<meta property="og:title" content="AI DJ — an AI with its hands on the decks">
+<meta property="og:description" content="Real songs. Real DJ moves. Every scratch, roll and crossfade is a tool call, decided live by Jev in ~150 ms.">
+<meta property="og:image" content="https://yask.dev/dj/media/og.jpg">
+<meta property="og:url" content="https://yask.dev/dj">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://yask.dev/dj/media/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0b0c; --panel: #111113; --line: #1f1f22; --ink: #ececec; --soft: #b4b4b8; --dim: #76767b; --faint: #333337;
+    --acc: #ff5a36; --blue: #3fb6ff;
+    --cond: "Barlow Condensed", "DIN Condensed", system-ui, sans-serif;
+    --sans: "Inter", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body { font: 400 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  a { color: inherit; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+  nav { display: flex; align-items: center; gap: 22px; padding: 26px 0; font: 500 13px var(--mono); color: var(--dim); }
+  nav .logo { font: 700 28px var(--cond); color: var(--ink); text-decoration: none; letter-spacing: .5px; margin-right: auto; }
+  nav .logo b { color: var(--acc); }
+  nav a { text-decoration: none; } nav a:hover { color: var(--ink); }
+  .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--faint); margin-right: 7px; vertical-align: 1px; }
+  .dot.on { background: #5bd67a; box-shadow: 0 0 8px #5bd67a; }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; padding: 40px 0 80px; }
+  .eyebrow { font: 500 12px var(--mono); letter-spacing: 1.5px; color: var(--acc); text-transform: uppercase; }
+  h1 { font: 700 clamp(56px, 8.4vw, 112px)/.92 var(--cond); margin: 18px 0 26px; letter-spacing: -.5px; text-transform: uppercase; }
+  h1 em { font-style: normal; color: var(--acc); }
+  .lede { color: var(--soft); font-size: 19px; max-width: 520px; margin: 0; }
+  .lede b { color: var(--ink); font-weight: 500; }
+  .ctas { display: flex; gap: 12px; margin-top: 34px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 12px; font: 600 20px var(--cond);
+    letter-spacing: .6px; text-transform: uppercase; text-decoration: none; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+  .btn:hover { border-color: var(--faint); }
+  .btn.acc { background: var(--acc); border-color: var(--acc); color: #0b0b0c; }
+  .btn svg { width: 18px; height: 18px; }
+
+  .stagebox { position: relative; justify-self: center; width: min(400px, 100%); }
+  .record { position: absolute; width: 560px; height: 560px; right: -300px; top: 50%; margin-top: -280px; border-radius: 50%; z-index: 0;
+    background: radial-gradient(circle, var(--acc) 0 13%, #0b0b0c 13% 14%, transparent 14%),
+                repeating-radial-gradient(circle, #141416 0 2px, #1b1b1e 2px 4px);
+    box-shadow: 0 0 0 1px #000, 0 30px 80px rgba(0,0,0,.6); animation: spin 6s linear infinite; }
+  .record::after { content: ""; position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(from 210deg, transparent 0 18deg, rgba(255,255,255,.06) 18deg 40deg, transparent 40deg); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .phone { position: relative; z-index: 1; border-radius: 26px; overflow: hidden; border: 1px solid var(--faint); background: #000;
+    box-shadow: 0 40px 100px rgba(0,0,0,.7); aspect-ratio: 9/16; }
+  .phone video { width: 100%; height: 100%; display: block; object-fit: cover; }
+  .sound { position: absolute; z-index: 2; right: 14px; top: 64px; font: 500 11px var(--mono); letter-spacing: 1px;
+    background: rgba(11,11,12,.82); color: var(--ink); border: 1px solid var(--faint); border-radius: 99px; padding: 9px 16px; cursor: pointer;
+    backdrop-filter: blur(6px); white-space: nowrap; }
+  .sound.on { color: var(--acc); border-color: var(--acc); }
+  .caption { text-align: center; font: 12px var(--mono); color: var(--dim); margin-top: 14px; position: relative; z-index: 1; }
+
+  /* stats */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { padding: 30px 0 28px; border-right: 1px solid var(--line); padding-left: 24px; }
+  .stat:first-child { padding-left: 0; } .stat:last-child { border-right: 0; }
+  .stat .n { font: 700 56px/1 var(--cond); }
+  .stat .n small { font-size: 28px; color: var(--dim); margin-left: 2px; }
+  .stat .l { font: 12px var(--mono); color: var(--dim); margin-top: 8px; }
+
+  section { padding: 110px 0 0; }
+  h2 { font: 700 clamp(40px, 5.4vw, 64px)/.95 var(--cond); text-transform: uppercase; margin: 12px 0 18px; letter-spacing: -.3px; }
+  .intro { color: var(--soft); max-width: 640px; margin: 0 0 44px; }
+
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .step { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 24px 22px 26px; }
+  .step .k { font: 500 12px var(--mono); color: var(--acc); }
+  .step h3 { font: 700 28px/1 var(--cond); text-transform: uppercase; margin: 14px 0 10px; }
+  .step p { margin: 0; color: var(--soft); font-size: 15px; }
+  .step code, .intro code { font: 13px var(--mono); color: var(--ink); background: #1a1a1d; padding: 1px 6px; border-radius: 5px; }
+
+  .moves { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .move { background: var(--bg); padding: 20px 22px; }
+  .move code { font: 500 14px var(--mono); color: var(--ink); }
+  .move code i { font-style: normal; color: var(--acc); }
+  .move p { margin: 6px 0 0; color: var(--dim); font-size: 14px; }
+
+  .sets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .set .frame { position: relative; border-radius: 18px; overflow: hidden; border: 1px solid var(--line); aspect-ratio: 9/16; background: #000; cursor: pointer; }
+  .set video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .set .play { position: absolute; inset: 0; display: grid; place-items: center; background: linear-gradient(transparent 60%, rgba(0,0,0,.55)); transition: opacity .2s; }
+  .set .play span { width: 64px; height: 64px; border-radius: 50%; background: var(--acc); display: grid; place-items: center; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+  .set .play svg { width: 22px; height: 22px; margin-left: 4px; }
+  .set.playing .play { opacity: 0; pointer-events: none; }
+  .set h3 { font: 700 26px/1.05 var(--cond); text-transform: uppercase; margin: 16px 0 4px; }
+  .set .meta { font: 12px var(--mono); color: var(--dim); }
+  .set .meta b { color: var(--ink); font-weight: 500; } .set .meta .bad { color: var(--acc); }
+
+  .run { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
+  pre { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 22px 24px; overflow-x: auto;
+    font: 13.5px/1.75 var(--mono); color: var(--soft); }
+  pre .c { color: var(--dim); } pre .p { color: var(--acc); user-select: none; }
+  .notes { color: var(--soft); font-size: 15px; }
+  .notes p { margin: 0 0 14px; } .notes b { color: var(--ink); font-weight: 500; }
+
+  footer { margin-top: 120px; border-top: 1px solid var(--line); padding: 30px 0 50px; display: flex; gap: 20px; flex-wrap: wrap;
+    font: 12px var(--mono); color: var(--dim); }
+  footer .r { margin-left: auto; }
+  footer a { text-decoration: none; } footer a:hover { color: var(--ink); }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 48px; padding-top: 20px; }
+    .record { width: 420px; height: 420px; margin-top: -210px; right: -230px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(2) { border-right: 0; } .stat:nth-child(3) { padding-left: 0; }
+    .stat:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+    .steps { grid-template-columns: 1fr 1fr; } .moves { grid-template-columns: 1fr 1fr; }
+    .sets { grid-template-columns: 1fr; max-width: 420px; } .run { grid-template-columns: 1fr; }
+    nav .hide-sm { display: none; }
+  }
+  @media (max-width: 560px) { .steps, .moves { grid-template-columns: 1fr; } .stat .n { font-size: 44px; }
+    .record { width: 300px; height: 300px; margin-top: -150px; right: -120px; } }
+  @media (prefers-reduced-motion: reduce) { .record { animation: none; } html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="logo" href="/dj">AI <b>DJ</b></a>
+    <a class="hide-sm" href="#how">How it works</a>
+    <a class="hide-sm" href="#sets">Sets</a>
+    <a href="/dj/booth" id="booth"><span class="dot" id="boothDot"></span>Live booth</a>
+    <a href="https://github.com/yask123/ai-dj">GitHub ↗</a>
+  </nav>
+
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Open-source experiment</div>
+      <h1>I gave an AI a pair of <em>turntables.</em></h1>
+      <p class="lede">Not a music generator. It plays <b>real songs</b> and performs them with <b>real DJ moves</b>:
+        scratches, loop rolls, spinbacks, crossfader chops. Every move is a tool call, decided live by
+        <b>Jev</b> in about <b>150 milliseconds</b>.</p>
+      <div class="ctas">
+        <button class="btn acc" id="heroPlay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>Play with sound</button>
+        <a class="btn" href="https://github.com/yask123/ai-dj"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.26 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>Source code</a>
+      </div>
+    </div>
+    <div class="stagebox">
+      <div class="record" aria-hidden="true"></div>
+      <div class="phone">
+        <video id="hero" src="/dj/media/baby-x-down.mp4" poster="/dj/media/baby-x-down.jpg" autoplay muted loop playsinline preload="auto"></video>
+        <button class="sound" id="sound">SOUND OFF · TAP FOR SOUND</button>
+      </div>
+      <div class="caption">Justin Bieber – Baby × Jay Sean – Down · performed by Jev</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="n">141<small>ms</small></div><div class="l">median decision, this set</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">missed beats in 10 live calls</div></div>
+    <div class="stat"><div class="n">12</div><div class="l">DJ moves · 6 scratch styles</div></div>
+    <div class="stat"><div class="n">2<small>bars</small></div><div class="l">lookahead, or it misses the move</div></div>
+  </div>
+
+  <section id="how">
+    <div class="eyebrow">How it works</div>
+    <h2>Code keeps the beat.<br>The model makes the calls.</h2>
+    <p class="intro">Coding agents get tools to read and edit files. This one gets tools to work the decks. A fast model
+      answers one typed question per phrase, and the engine turns the answer into sound on the next downbeat.</p>
+    <div class="steps">
+      <div class="step"><div class="k">01 · PREP</div><h3>Read the records</h3>
+        <p>Demucs splits each song into drums, bass, vocals and other. beat-this finds every beat and downbeat. Whisper
+          finds the hook and the exact word to scratch.</p></div>
+      <div class="step"><div class="k">02 · DECIDE</div><h3>Ask Jev</h3>
+        <p>Every couple of bars, one call with four typed questions: <code>move</code>, <code>next song</code>,
+          <code>scratch style</code>, <code>hype</code>. Answers come back with probabilities in ~150 ms.</p></div>
+      <div class="step"><div class="k">03 · PERFORM</div><h3>Work the decks</h3>
+        <p>A bar-by-bar engine: beat-locked time-stretch, key shifting, a scratch synth that models the platter and
+          crossfader, EQ kills, filters, echo, reverb.</p></div>
+      <div class="step"><div class="k">04 · SHOW</div><h3>Draw the hands</h3>
+        <p>Every platter wobble, knob turn and fingertip in the video comes from what the engine actually did, recorded
+          30 times a second.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">The toolbox</div>
+    <h2>Twelve moves, one decision at a time</h2>
+    <p class="intro">Code decides which moves are legal right now (phrase position, what just happened, what's
+      playing). Jev picks one. If the answer comes back later than the two-bar window, the DJ misses the move.</p>
+    <div class="moves">
+      <div class="move"><code>deck.<i>scratch_in</i>(word, style)</code><p>Scratch the next song's hook over the beat, then slam it in on the 1.</p></div>
+      <div class="move"><code>mixer.<i>crossfader_chops</i>()</code><p>Flip between both decks every half beat, landing on the new hook.</p></div>
+      <div class="move"><code>deck.<i>roll</i>(1 → 1/8)</code><p>A loop roll that shrinks with a rising filter and noise, into the drop.</p></div>
+      <div class="move"><code>deck.<i>spinback</i>()</code><p>Rewind the record backwards, then drop the next song.</p></div>
+      <div class="move"><code>deck.<i>brake</i>()</code><p>Slow the platter to a stop, like cutting power to the turntable.</p></div>
+      <div class="move"><code>fx.<i>echo_out</i>()</code><p>Throw the last beat into a tempo-synced echo and cut it clean.</p></div>
+      <div class="move"><code>mixer.<i>drop_gap</i>()</code><p>One beat of silence, then the next song hits with a sub boom.</p></div>
+      <div class="move"><code>deck.<i>scratch_fill</i>(style)</code><p>A flashy scratch on the current hook to close a phrase.</p></div>
+      <div class="move"><code>mixer.<i>filter_dip</i>() · fx.<i>echo_throw</i>()</code><p>Small accents inside a phrase, or <code style="font:13px var(--mono)">ride</code>: let it play.</p></div>
+    </div>
+  </section>
+
+  <section id="sets">
+    <div class="eyebrow">Sets</div>
+    <h2>Same decks, different brains</h2>
+    <p class="intro">Any model can sit at the decks. LLMs are smart but slow: at ~1 s a decision, they sometimes
+      miss the window. Jev is built for exactly this kind of fast, narrow call.</p>
+    <div class="sets">
+      <div class="set">
+        <div class="frame"><video src="/dj/media/not-like-us-x-get-low.mp4" poster="/dj/media/not-like-us-x-get-low.jpg" playsinline preload="none"></video>
+          <div class="play"><span><svg viewBox="0 0 24 24" fill="#0b0b0c"><path d="M7 4.5v15l13-7.5z"/></svg></span></div></div>
+        <h3>Not Like Us × Get Low</h3>
+        <div class="meta">Jev · <b>140 ms</b> median · 0 late · same key, same 101 BPM</div>
+      </div>
+      <div class="set">
+        <div class="frame"><video src="/dj/media/omt-espresso-jev.mp4" poster="/dj/media/omt-espresso-jev.jpg" playsinline preload="none"></video>
+          <div class="play"><span><svg viewBox="0 0 24 24" fill="#0b0b0c"><path d="M7 4.5v15l13-7.5z"/></svg></span></div></div>
+        <h3>One More Time × Espresso · Jev</h3>
+        <div class="meta">Jev · <b>168 ms</b> median · 0 late of 10</div>
+      </div>
+      <div class="set">
+        <div class="frame"><video src="/dj/media/omt-espresso-haiku.mp4" poster="/dj/media/omt-espresso-haiku.jpg" playsinline preload="none"></video>
+          <div class="play"><span><svg viewBox="0 0 24 24" fill="#0b0b0c"><path d="M7 4.5v15l13-7.5z"/></svg></span></div></div>
+        <h3>One More Time × Espresso · Claude</h3>
+        <div class="meta">Claude Haiku 4.5 · <b>1.1 s</b> median · <span class="bad">1 late</span>: a 4.3 s call missed its move</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="run">
+    <div class="eyebrow">Open source</div>
+    <h2>Put it on your own decks</h2>
+    <div class="run">
+      <pre><span class="c"># macOS or Linux, Python 3.12</span>
+<span class="p">$ </span>git clone https://github.com/yask123/ai-dj && cd ai-dj
+<span class="p">$ </span>brew install ffmpeg rubberband yt-dlp
+<span class="p">$ </span>uv venv --python 3.12 .venv
+<span class="p">$ </span>uv pip install -r requirements.txt
+<span class="p">$ </span>echo "sk-or-…" > .openrouter_key
+<span class="p">$ </span>.venv/bin/python server.py
+<span class="c"># → localhost:8765 · pick two songs, pick a brain, drop it</span></pre>
+      <div class="notes">
+        <p><b>One OpenRouter key</b> covers Jev (<code style="font:13px var(--mono)">typesafe/jev-1.13</code>) and every
+          LLM you want to race it against. A set costs a fraction of a cent.</p>
+        <p><b>First-time songs take ~45 s</b> on an Apple Silicon Mac: download, stems, beat grid, hook detection.
+          After that they're cached and a new set takes seconds.</p>
+        <p><b>The live booth</b> (<a href="/dj/booth">/dj/booth</a>) is the same app, running on my Mac. It's open when the Mac is awake.</p>
+        <p style="margin-top:22px"><a class="btn acc" href="https://github.com/yask123/ai-dj">View on GitHub ↗</a></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Built by <a href="https://yask.dev">Yask</a> · decisions by <a href="https://typesafe.ai">Jev / TypeSafe</a> via OpenRouter</span>
+    <span class="r">Songs belong to their artists; short clips shown as a non-commercial tech demo.</span>
+  </footer>
+</div>
+
+<script>
+const hero = document.getElementById("hero"), sound = document.getElementById("sound");
+const vids = [...document.querySelectorAll("video")];
+function solo(v) { vids.forEach(o => { if (o !== v) { o.muted = true; if (o !== hero) { o.pause(); o.closest(".set")?.classList.remove("playing"); } } }); }
+function setHeroSound(on) {
+  hero.muted = !on;
+  if (on) { solo(hero); hero.currentTime = hero.currentTime < 1 ? 0 : hero.currentTime; hero.play(); }
+  sound.textContent = on ? "SOUND ON · TAP TO MUTE" : "SOUND OFF · TAP FOR SOUND";
+  sound.classList.toggle("on", on);
+}
+sound.onclick = () => setHeroSound(hero.muted);
+document.getElementById("heroPlay").onclick = () => { hero.currentTime = 0; setHeroSound(true); document.querySelector(".stagebox").scrollIntoView({ behavior: "smooth", block: "center" }); };
+document.querySelectorAll(".set .frame").forEach(f => {
+  const v = f.querySelector("video"), set = f.closest(".set");
+  f.onclick = () => {
+    if (v.paused) { setHeroSound(false); solo(v); v.muted = false; v.play(); set.classList.add("playing"); }
+    else { v.pause(); set.classList.remove("playing"); }
+  };
+  v.onended = () => set.classList.remove("playing");
+});
+// pause anything with sound that scrolls out of view
+new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting && !e.target.muted) { e.target.pause(); e.target.closest(".set")?.classList.remove("playing"); if (e.target === hero) setHeroSound(false); } }),
+  { threshold: 0.2 }).observe(hero);
+vids.filter(v => v !== hero).forEach(v => new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) { v.pause(); v.closest(".set").classList.remove("playing"); } })).observe(v));
+// is the live booth open?
+(async () => {
+  try {
+    const { url } = await fetch("/dj/backend.json", { cache: "no-store" }).then(r => r.json());
+    if (!url) return;
+    const ctl = new AbortController(); setTimeout(() => ctl.abort(), 4000);
+    const h = await fetch(url + "/api/health", { signal: ctl.signal }).then(r => r.json());
+    if (h.ok) { document.getElementById("boothDot").classList.add("on"); document.getElementById("booth").title = "the booth is open"; }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

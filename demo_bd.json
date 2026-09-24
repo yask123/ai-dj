@@ -1,0 +1,33 @@
+{
+ "yt_kffacxfA7G4": {
+  "title": "Justin Bieber \u2013 Baby",
+  "hook": 24,
+  "cues": [
+   24,
+   56
+  ],
+  "hook_len": 8,
+  "stab": 97.0,
+  "stab_len": 1.0,
+  "hook_desc": "chorus: 'baby, baby, baby, oh'",
+  "vibe": "2010 pop, bright, sing-along",
+  "energy": "high",
+  "word": "baby"
+ },
+ "yt_oUbpGmR1-QM": {
+  "title": "Jay Sean \u2013 Down",
+  "hook": 36,
+  "cues": [
+   36,
+   68
+  ],
+  "hook_len": 8,
+  "stab": 163.8,
+  "stab_len": 0.9,
+  "pitch": 1,
+  "hook_desc": "chorus: 'baby are you down, down, down'",
+  "vibe": "2009 R&B-pop, smooth, big chorus",
+  "energy": "high",
+  "word": "down"
+ }
+}

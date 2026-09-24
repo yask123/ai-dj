@@ -1,0 +1,90 @@
+{
+ "yeah": {
+  "title": "Usher \u2013 Yeah!",
+  "hook": 24,
+  "hook_len": 12,
+  "stab": 7.008,
+  "stab_len": 0.9,
+  "hook_desc": "chorus: 'I said Yeah!'",
+  "vibe": "crunk-pop club anthem with a huge crowd shout",
+  "energy": "very high",
+  "word": "Yeah!"
+ },
+ "espresso": {
+  "title": "Sabrina Carpenter \u2013 Espresso",
+  "hook": 30,
+  "hook_len": 8,
+  "stab": 126.456,
+  "stab_len": 1.0,
+  "hook_desc": "chorus: 'that's that me espresso'",
+  "vibe": "sassy bright summer pop singalong",
+  "energy": "high",
+  "word": "espresso"
+ },
+ "not_like_us": {
+  "title": "Kendrick Lamar \u2013 Not Like Us",
+  "hook": 31,
+  "hook_len": 8,
+  "stab": 126.008,
+  "stab_len": 0.9,
+  "hook_desc": "hook chant: 'they not like us'",
+  "vibe": "stomping West Coast hype chant",
+  "energy": "very high",
+  "word": "not like us"
+ },
+ "get_low": {
+  "title": "Lil Jon \u2013 Get Low",
+  "hook": 98,
+  "hook_len": 12,
+  "stab": 392.431,
+  "stab_len": 1.1,
+  "hook_desc": "'get low\u2026 to the window, to the wall'",
+  "vibe": "rowdy crunk party chant",
+  "energy": "very high",
+  "word": "get low"
+ },
+ "jump_around": {
+  "title": "House of Pain \u2013 Jump Around",
+  "hook": 24,
+  "hook_len": 12,
+  "stab": 111.409,
+  "stab_len": 0.6,
+  "hook_desc": "'jump around' + jump chant",
+  "vibe": "whole-crowd jumping chant, iconic squeal",
+  "energy": "very high",
+  "word": "jump"
+ },
+ "hot_in_herre": {
+  "title": "Nelly \u2013 Hot In Herre",
+  "hook": 29,
+  "hook_len": 8,
+  "stab": 117.535,
+  "stab_len": 1.1,
+  "hook_desc": "chorus: 'it's getting hot in here'",
+  "vibe": "playful 2000s party singalong",
+  "energy": "high",
+  "word": "hot in here"
+ },
+ "crazy_in_love": {
+  "title": "Beyonc\u00e9 \u2013 Crazy In Love",
+  "hook": 40,
+  "hook_len": 8,
+  "stab": 161.866,
+  "stab_len": 0.7,
+  "hook_desc": "chorus: 'got me looking so crazy right now'",
+  "vibe": "brassy iconic peak-time anthem",
+  "energy": "very high",
+  "word": "crazy"
+ },
+ "levitating": {
+  "title": "Dua Lipa \u2013 Levitating",
+  "hook": 16,
+  "hook_len": 8,
+  "stab": 79.281,
+  "stab_len": 1.0,
+  "hook_desc": "chorus: 'I'm levitating'",
+  "vibe": "disco-pop groove, light and bright",
+  "energy": "medium-high",
+  "word": "levitating"
+ }
+}
