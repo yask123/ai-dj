@@ -24,3 +24,5 @@ __pycache__/
 mac/build/
 mac/.test/
 mac/icon_preview.png
+mac/Decks.xcodeproj/project.xcworkspace/xcuserdata/
+mac/Decks.xcodeproj/xcuserdata/

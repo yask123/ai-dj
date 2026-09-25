@@ -484,7 +484,7 @@ struct KeyCatcher: View {
     let booth: Booth
     var body: some View {
         let keys: [(KeyEquivalent, Move)] = [("1", .scratchIn), ("2", .chopCut), ("3", .echoOut), ("4", .spinback), ("5", .brake), ("6", .rollBuild),
-                                             ("7", .dropGap), ("q", .scratchFill), ("w", .rollFill), ("e", .echoThrow), ("r", .filterDip)]
+                                             ("7", .dropGap), ("8", .blend), ("q", .scratchFill), ("w", .rollFill), ("e", .echoThrow), ("r", .filterDip)]
         ZStack {
             ForEach(keys, id: \.1) { k, m in
                 Button("") { booth.perform(m) }.keyboardShortcut(k, modifiers: []).opacity(0)

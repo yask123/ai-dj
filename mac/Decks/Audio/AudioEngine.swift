@@ -24,5 +24,18 @@ final class AudioEngine: @unchecked Sendable {
         engine.connect(limiter, to: engine.mainMixerNode, format: fmt)
         engine.prepare()
         try? engine.start()
+        self.limiter = limiter
     }
+    private var limiter: AVAudioUnitEffect?
+    private var recFile: AVAudioFile?
+
+    /// Test hook: mute the speakers and record exactly what the booth plays.
+    func record(to url: URL, mute: Bool) throws {
+        guard let limiter else { return }
+        engine.mainMixerNode.outputVolume = mute ? 0 : 1
+        let fmt = limiter.outputFormat(forBus: 0)
+        recFile = try AVAudioFile(forWriting: url, settings: fmt.settings)
+        limiter.installTap(onBus: 0, bufferSize: 4096, format: fmt) { [weak self] buf, _ in try? self?.recFile?.write(from: buf) }
+    }
+    func stopRecording() { limiter?.removeTap(onBus: 0); recFile = nil }
 }

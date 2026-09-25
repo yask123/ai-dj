@@ -109,6 +109,7 @@ struct DJEvent {
     var deck: Int      // -1 = master
     var action: DeckAction?
     var master: MasterAction?
+    var seq = 0        // events at the same sample run in the order they were scheduled
 }
 
 // MARK: - a deck
@@ -128,6 +129,8 @@ struct DeckState {
     var lowF = Biquad(), highF = Biquad(), knobLP = Biquad(), knobHP = Biquad(), dc = Biquad()
     var lastKnob: Float = 99
     var rms: Float = 0
+    var trim: Float = 1           // loudness match (hook → common level)
+    var stopping = false          // only an explicit .stop ends playback (a fade to 0 alone never does)
 }
 
 /// The whole booth in one render callback: two decks, isolator EQs, DJ filters, scratch synth,
@@ -155,6 +158,7 @@ final class DJCore: @unchecked Sendable {
     private var lock = os_unfair_lock()
     private var pending: [DJEvent] = []
     private var queue: [DJEvent] = []
+    private var seqCounter = 0
     var masterRMS: Float = 0
 
     init(sampleRate: Double) {
@@ -175,14 +179,17 @@ final class DJCore: @unchecked Sendable {
     var samplesPerBar: Double { samplesPerBeat * 4 }
 
     func schedule(_ events: [DJEvent]) {
-        os_unfair_lock_lock(&lock); pending.append(contentsOf: events); os_unfair_lock_unlock(&lock)
+        os_unfair_lock_lock(&lock)
+        for var e in events { seqCounter += 1; e.seq = seqCounter; pending.append(e) }
+        os_unfair_lock_unlock(&lock)
     }
 
-    func setBuffer(_ deck: Int, _ buf: PCMBuffer, bpm: Double) {
+    func setBuffer(_ deck: Int, _ buf: PCMBuffer, bpm: Double, trim: Float = 1) {
         os_unfair_lock_lock(&lock)
         decks[deck].buf = buf
         decks[deck].trackBPM = bpm
         decks[deck].rate = masterBPM / bpm
+        decks[deck].trim = trim
         decks[deck].playing = false
         decks[deck].mode = .play
         os_unfair_lock_unlock(&lock)
@@ -223,9 +230,10 @@ final class DJCore: @unchecked Sendable {
         switch a {
         case .start(let p):
             decks[e.deck].pos = p; decks[e.deck].readPos = p; decks[e.deck].prevRead = p
-            decks[e.deck].playing = true; decks[e.deck].mode = .play
+            decks[e.deck].playing = true; decks[e.deck].mode = .play; decks[e.deck].stopping = false
             decks[e.deck].gain.v = 0; decks[e.deck].gain.set(1, over: fast)
         case .stop:
+            decks[e.deck].stopping = true
             decks[e.deck].gain.set(0, over: fast)
             decks[e.deck].echo.set(0, over: fast)
         case .gain(let g, let n): decks[e.deck].gain.set(g, over: n)
@@ -256,7 +264,7 @@ final class DJCore: @unchecked Sendable {
             if !pending.isEmpty {
                 queue.append(contentsOf: pending)
                 pending.removeAll(keepingCapacity: true)
-                queue.sort { $0.at < $1.at }
+                queue.sort { $0.at != $1.at ? $0.at < $1.at : $0.seq < $1.seq }   // stable: never reorder same-sample events
             }
             os_unfair_lock_unlock(&lock)
         }
@@ -325,7 +333,7 @@ final class DJCore: @unchecked Sendable {
                 dk.env += (env - dk.env) * 0.02
                 dk.prevRead = rp
                 var (l, r) = read(b, rp)
-                l *= dk.env; r *= dk.env
+                l *= dk.env * dk.trim; r *= dk.env * dk.trim
                 // isolator EQ: bands sum flat when all gains are 1
                 let g0 = dk.low.tick(), g1 = dk.mid.tick(), g2 = dk.high.tick()
                 let (lo_l, lo_r) = dk.lowF.run(l, r)
@@ -348,7 +356,7 @@ final class DJCore: @unchecked Sendable {
                 sendL += l * es; sendR += r * es
                 outL += l; outR += r
                 dk.rms += (l * l - dk.rms) * 0.0005
-                if dk.gain.v <= 0.0001 && dk.gain.left == 0 && dk.gain.target == 0 { dk.playing = false }
+                if dk.stopping && dk.gain.v <= 0.0001 && dk.gain.left == 0 { dk.playing = false; dk.stopping = false }
                 dk.pos += dk.rate
                 decks[d] = dk
             }

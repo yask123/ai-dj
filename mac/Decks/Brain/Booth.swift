@@ -5,7 +5,7 @@ import SwiftUI
 enum Move: String, CaseIterable, Identifiable, Sendable {
     case ride, scratchFill = "scratch_fill", rollFill = "roll_fill", echoThrow = "echo_throw", filterDip = "filter_dip"
     case scratchIn = "scratch_in", chopCut = "chop_cut", echoOut = "echo_out_cut", spinback = "spinback_cut"
-    case brake = "brake_cut", rollBuild = "roll_build_cut", dropGap = "drop_gap_cut"
+    case brake = "brake_cut", rollBuild = "roll_build_cut", dropGap = "drop_gap_cut", blend = "blend_cut"
     var id: String { rawValue }
     var isTransition: Bool { rawValue.hasSuffix("_cut") || self == .scratchIn }
     var title: String {
@@ -13,6 +13,7 @@ enum Move: String, CaseIterable, Identifiable, Sendable {
         case .ride: "Ride"; case .scratchFill: "Scratch fill"; case .rollFill: "Roll fill"; case .echoThrow: "Echo throw"
         case .filterDip: "Filter dip"; case .scratchIn: "Scratch in"; case .chopCut: "Chops"; case .echoOut: "Echo out"
         case .spinback: "Spinback"; case .brake: "Brake"; case .rollBuild: "Roll build"; case .dropGap: "Drop gap"
+        case .blend: "Blend"
         }
     }
     var symbol: String {
@@ -20,7 +21,7 @@ enum Move: String, CaseIterable, Identifiable, Sendable {
         case .ride: "play"; case .scratchFill: "hand.draw"; case .rollFill: "repeat"; case .echoThrow: "wave.3.right"
         case .filterDip: "water.waves"; case .scratchIn: "hand.point.up.left.and.text"; case .chopCut: "scissors"
         case .echoOut: "dot.radiowaves.right"; case .spinback: "arrow.counterclockwise"; case .brake: "stop.circle"
-        case .rollBuild: "arrow.up.right.circle"; case .dropGap: "speaker.slash"
+        case .rollBuild: "arrow.up.right.circle"; case .dropGap: "speaker.slash"; case .blend: "arrow.left.arrow.right"
         }
     }
     var rubric: String {
@@ -37,10 +38,13 @@ enum Move: String, CaseIterable, Identifiable, Sendable {
         case .brake: "Vinyl-brake the current song to a stop over the last two beats, then drop the next song."
         case .rollBuild: "Loop-roll the current song shrinking 1 → 1/2 → 1/4 → 1/8 beat with a rising filter and noise, then drop the next song. Maximum build-up."
         case .dropGap: "One beat of silence, then the next song hits with a sub boom. Big impact."
+        case .blend: "The smooth DJ mix: bring the next song in underneath for 4 bars with its bass cut, swap the basslines on the phrase, then fade the old song out. Seamless and musical; best when the keys match and the energy is similar."
         }
     }
     static let fills: [Move] = [.ride, .scratchFill, .rollFill, .echoThrow, .filterDip]
-    static let transitions: [Move] = [.scratchIn, .chopCut, .echoOut, .spinback, .brake, .rollBuild, .dropGap]
+    static let transitions: [Move] = [.scratchIn, .chopCut, .echoOut, .spinback, .brake, .rollBuild, .dropGap, .blend]
+    /// moves that layer both songs for more than a beat or two (need compatible keys to sound good)
+    var overlaps: Bool { self == .blend || self == .chopCut }
 }
 
 struct Decision: Identifiable, Sendable {
@@ -85,6 +89,7 @@ final class Booth {
     private var decidedThrough = -1
     private var clock: Task<Void, Never>?
     private var endAt: Int?
+    private var lockUntil = -1    // bars covered by a multi-bar move (a blend): no new decisions inside it
     private let lookahead = 2
 
     var bpm: Double { core.masterBPM }
@@ -103,7 +108,7 @@ final class Booth {
                 loadingText[deck] = nil
                 if !playing || seg?.deck != deck {
                     if tracks[1 - deck] == nil || !playing { core.setMasterBPM(t.analysis.bpm) }
-                    core.setBuffer(deck, t.pcm, bpm: effectiveBPM(t))
+                    core.setBuffer(deck, t.pcm, bpm: effectiveBPM(t), trim: t.analysis.trim)
                 }
                 say("deck_\(deck == 0 ? "a" : "b").load(\"\(t.info.title)\", bpm: \(String(format: "%.1f", t.analysis.bpm)))", brain: false)
             } catch {
@@ -142,9 +147,13 @@ final class Booth {
         guard let a = tracks[0] ?? tracks[1] else { return }
         let first = tracks[0] != nil ? 0 : 1
         core.setMasterBPM(a.analysis.bpm)
-        for d in 0..<2 { if let t = tracks[d] { core.setBuffer(d, t.pcm, bpm: effectiveBPM(t)) } }
+        if let b = tracks[1 - first] {
+            // meet in the middle: each deck moves half the tempo gap (varispeed = pitch, so halve the shift)
+            core.setMasterBPM(sqrt(a.analysis.bpm * effectiveBPM(b)))
+        }
+        for d in 0..<2 { if let t = tracks[d] { core.setBuffer(d, t.pcm, bpm: effectiveBPM(t), trim: t.analysis.trim) } }
         core.resetClock()
-        decisions = []; history = []; scratchHistory = []; plays = [0, 0]; endAt = nil
+        decisions = []; history = []; scratchHistory = []; plays = [0, 0]; endAt = nil; lockUntil = -1
         let fastEQ = [DJEvent(at: 0, deck: 0, action: .resetEQ), DJEvent(at: 0, deck: 1, action: .resetEQ)]
         core.schedule(fastEQ)
         let hook = cueBar(first, 0)
@@ -207,7 +216,8 @@ final class Booth {
     private func sourceSample(_ d: Int, _ b: Int) -> Double {
         guard let t = tracks[d] else { return 0 }
         let effBarSec = 240 / effectiveBPM(t)
-        return (t.analysis.firstDownbeat + Double(b) * effBarSec) * core.sr
+        let time = t.analysis.firstDownbeat + Double(b) * effBarSec
+        return (time + t.analysis.localOffset(at: time)) * core.sr   // re-locked to the real hits around this cue
     }
     private func stab(_ d: Int) -> (Double, Double) {
         guard let t = tracks[d] else { return (0, 1000) }
@@ -219,6 +229,7 @@ final class Booth {
 
     private func decide(bar target: Int) {
         guard let s = seg else { return }
+        if target < lockUntil { return }   // inside a blend: the hands are busy
         let into = target - s.startBar
         let phraseEnd = into % 4 == 3
         let mustChange = into >= s.len - 1
@@ -230,6 +241,14 @@ final class Booth {
         else if mustChange && hasOther { options = Move.transitions }
         else if phraseEnd && into >= 3 { options = Move.fills + (hasOther ? Move.transitions : []) }
         else { options = into % 4 == 1 ? [.ride, .filterDip, .echoThrow] : [.ride] }
+        // harmony + tempo: only layer the two songs when they'll sound good together
+        let compat = mixCompatibility(s.deck)
+        let cueRoom = cueBar(1 - s.deck, plays[1 - s.deck]) >= 4
+        options = options.filter { m in
+            if m == .blend { return compat.keys == true && compat.detune < 0.3 && cueRoom }
+            if m == .chopCut { return compat.keys != false }
+            return true
+        }
         // variety is enforced in code
         let recent = history.suffix(6).filter { $0 != .ride }
         let lastTransitions = history.filter(\.isTransition).suffix(2)
@@ -238,13 +257,17 @@ final class Booth {
         guard options.count > 1 || final else { apply(.ride, at: target, scratch: .baby, hype: 2); return }
 
         let state: [String: Any] = [
-            "gig": "A live DJ set. Songs switch every 4–8 bars; it must feel fun, surprising and hype, with DJ skills on show. Avoid repeating the same move back-to-back.",
+            "gig": "A live DJ set. Songs switch every 4–8 bars; it must feel fun, surprising and hype, with DJ skills on show, and every switch must sound musical: blend when the keys match, cut or scratch when they don't. Avoid repeating the same move back-to-back.",
             "now_playing": ["song": tracks[s.deck]?.info.title ?? "", "energy_this_bar": energyWord(s.deck, s.cue + into)],
             "timing": final ? "this is the FINAL bar of the set — end it with style"
                 : mustChange ? "the hook is running out: this bar must transition to the next song"
                 : phraseEnd ? (into >= 7 ? "last bar of a phrase; the song has played a while, a transition fits" : "last bar of a phrase; the song only just started")
                 : "middle of a phrase — keep the groove going or add a small accent",
             "next_song": tracks[1 - s.deck]?.info.title ?? "none",
+            "next_song_energy": hasOther ? energyWord(1 - s.deck, cueBar(1 - s.deck, plays[1 - s.deck])) : "none",
+            "keys": compat.keys == true && compat.detune < 0.3 ? "the two songs' keys match: layering them (blend, chops) sounds great"
+                : compat.keys == nil ? "unknown" : "the keys clash at this tempo: avoid long overlaps, a clean cut or scratch works best",
+            "tempo": compat.gap < 0.03 ? "tempos are almost identical" : compat.gap < 0.06 ? "tempos are close" : "tempos are far apart; quick cuts hide it best",
             "recent_moves": history.suffix(4).map(\.rawValue),
         ]
         let styles = Dictionary(uniqueKeysWithValues: ScratchStyle.allCases.filter { !scratchHistory.suffix(2).contains($0.name) }.map {
@@ -266,7 +289,17 @@ final class Booth {
             catch { self.error = "Jev: \(error.localizedDescription)" }
             thinking = false
             let late = core.now > deadline
-            let wanted = ans?.move ?? "error"
+            // Jev's probabilities are calibrated: sample from them (sharpened) instead of always taking the top pick,
+            // so the same situation doesn't always produce the same set. Strong favourites still almost always win.
+            var wanted = ans?.move ?? "error"
+            if let probs = ans?.probs, probs.count > 1 {
+                let legal = probs.filter { p in options.contains { $0.rawValue == p.0 } && p.1 > 0.05 }
+                let w = legal.map { pow($0.1, 2) }, total = w.reduce(0, +)
+                if total > 0 {
+                    var r = Double.random(in: 0..<total)
+                    for (p, wi) in zip(legal, w) { r -= wi; if r < 0 { wanted = p.0; break } }
+                }
+            }
             var m = Move(rawValue: wanted) ?? .ride
             if late || !options.contains(m) { m = options.contains(.ride) ? .ride : (final ? .echoOut : .echoOut) }
             let style = ans?.scratch.flatMap { n in ScratchStyle.allCases.first { $0.name == n } } ?? .baby
@@ -275,6 +308,20 @@ final class Booth {
             if late && core.now > barSample(target) { return }   // missed it entirely
             apply(m, at: target, scratch: style, hype: ans?.hype ?? 2)
         }
+    }
+
+    /// Do the two decks' keys work together *as they sound right now*? Tempo matching is varispeed (like vinyl),
+    /// so matching tempos also transposes: compare keys after that shift, and flag leftover detuning.
+    private func mixCompatibility(_ current: Int) -> (keys: Bool?, detune: Double, gap: Double) {
+        guard let a = tracks[current], let b = tracks[1 - current] else { return (nil, 1, 1) }
+        let semis = 12 * log2(effectiveBPM(a) / effectiveBPM(b))          // how far B is transposed relative to A
+        let whole = Int(semis.rounded()), detune = abs(semis - Double(whole))
+        var keys: Bool? = nil
+        if let nb = Int(b.analysis.camelot.dropLast()), let letter = b.analysis.camelot.last {
+            let shifted = "\(((nb - 1 + 7 * whole) % 12 + 12) % 12 + 1)\(letter)"     // +1 semitone = +7 on the Camelot wheel
+            keys = Analyzer.keysCompatible(a.analysis.camelot, shifted)
+        }
+        return (keys, detune, abs(effectiveBPM(a) / effectiveBPM(b) - 1))
     }
 
     private func energyWord(_ d: Int, _ srcBar: Int) -> String {
@@ -288,7 +335,9 @@ final class Booth {
         if decisions.count > 60 { decisions.removeFirst(decisions.count - 60) }
         history.append(d.move)
         if let s = d.scratch { scratchHistory.append(s) }
-        if d.ms > 0 || d.byHuman {
+        if d.byHuman {
+            say("you.perform(\(d.move.rawValue), at: bar \(d.bar))", brain: false)
+        } else if d.ms > 0 {
             say("jev.decide(bar: \(d.bar)) → \(d.move.rawValue)  \(Int(d.ms)) ms" + (d.late ? "  LATE" : ""), brain: true)
         }
     }
@@ -302,7 +351,7 @@ final class Booth {
     // MARK: manual moves (quantised to the next bar)
 
     func perform(_ m: Move) {
-        guard playing, let _ = seg else { return }
+        guard playing, let _ = seg, bar + 1 >= lockUntil else { return }
         let target = max(bar + 1, decidedThrough + 1)
         decidedThrough = target
         let style = ScratchStyle.allCases.randomElement()!
@@ -414,6 +463,31 @@ final class Booth {
                 ev = [DJEvent(at: beat(b, 3), deck: D, action: .gain(0, ramp: ms(5))),
                       DJEvent(at: barSample(b + 1), deck: -1, master: .impact(1))]
                 say("mixer.mute(deck_\(abc(D)))  // drop gap", brain: true)
+            case .blend:
+                // N enters 4 bars before its hook, bass cut, fading up over 2 bars; on the phrase the basslines swap;
+                // D fades out over 2 bars with a rising high-pass. No impacts, no gaps: just the two records gelling.
+                let k = plays[N]; plays[N] += 1
+                let cue = cueBar(N, k)
+                let bar4 = Double(core.samplesPerBar) * 4
+                let swap = barSample(b + 4)
+                ev = [DJEvent(at: barSample(b), deck: N, action: .resetEQ),
+                      DJEvent(at: barSample(b), deck: N, action: .low(0, ramp: 0)),
+                      DJEvent(at: barSample(b), deck: N, action: .start(pos: sourceSample(N, cue - 4))),
+                      DJEvent(at: barSample(b), deck: N, action: .gain(0, ramp: 0)),
+                      DJEvent(at: barSample(b) + 1, deck: N, action: .gain(1, ramp: Int(bar4 / 2))),
+                      DJEvent(at: barSample(b + 2), deck: D, action: .high(0.45, ramp: Int(bar4 / 2))),
+                      DJEvent(at: swap, deck: D, action: .low(0, ramp: ms(12))),
+                      DJEvent(at: swap, deck: N, action: .low(1, ramp: ms(12))),
+                      DJEvent(at: swap, deck: D, action: .filter(0.55, ramp: Int(bar4 / 2))),
+                      DJEvent(at: swap, deck: D, action: .gain(0, ramp: Int(bar4 / 2))),
+                      DJEvent(at: barSample(b + 6), deck: D, action: .stop)]
+                s = Segment(deck: N, startBar: b + 4, cue: cue, len: 8)
+                lockUntil = b + 4
+                say("deck_\(abc(N)).play(bass: cut) → mixer.fade_in(4 bars)", brain: true)
+                seg = s
+                core.schedule(ev)
+                say("mixer.bass_swap(at: bar \(b + 4)) → deck_\(abc(D)).fade_out()", brain: true)
+                return
             default: break
             }
             land()
