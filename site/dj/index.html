@@ -136,6 +136,7 @@
     <a class="logo" href="/dj">AI <b>DJ</b></a>
     <a class="hide-sm" href="#how">How it works</a>
     <a class="hide-sm" href="#sets">Sets</a>
+    <a class="hide-sm" href="#mac">Mac app</a>
     <a href="/dj/booth" id="booth"><span class="dot" id="boothDot"></span>Live booth</a>
     <a href="https://github.com/yask123/ai-dj">GitHub ↗</a>
   </nav>
@@ -232,6 +233,26 @@
         <h3>One More Time × Espresso · Claude</h3>
         <div class="meta">Claude Haiku 4.5 · <b>1.1 s</b> median · <span class="bad">1 late</span>: a 4.3 s call missed its move</div>
       </div>
+    </div>
+  </section>
+
+  <section id="mac">
+    <div class="eyebrow">Mac app</div>
+    <h2>Decks, live on your Mac</h2>
+    <p class="intro">A native, real-time version: two decks in Liquid Glass, Jev deciding every move live as the music plays.
+      Load your own files, your Music library, Creative Commons tracks, or find a song by name or Spotify link.</p>
+    <div class="run">
+      <div class="notes">
+        <p style="margin-top:0"><a class="btn acc" href="/dj/media/Decks.dmg" download>Download Decks for macOS ↓</a></p>
+        <p><b>macOS 26 or later</b>, Apple Silicon or Intel. 1.5 MB.</p>
+        <p><b>First launch:</b> the app isn't notarized yet, so right-click Decks → <b>Open</b> → Open. You only need to do this once.</p>
+        <p>Paste an <b>OpenRouter key</b> when asked so Jev can DJ. "Find a song" also needs <code style="font:13px var(--mono)">brew install yt-dlp ffmpeg</code>.</p>
+      </div>
+      <pre><span class="c"># or build it from source</span>
+<span class="p">$ </span>brew install xcodegen
+<span class="p">$ </span>git clone https://github.com/yask123/ai-dj
+<span class="p">$ </span>cd ai-dj/mac && xcodegen
+<span class="p">$ </span>open Decks.xcodeproj   <span class="c"># ⌘R</span></pre>
     </div>
   </section>
 
